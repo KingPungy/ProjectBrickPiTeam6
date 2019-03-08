@@ -45,35 +45,25 @@ int main(){
   // sensor_ultrasonic_t Ultrasonic4;
 
   for (unsigned int i = 0; i < 5000; i++) {
-    BP.get_sensor(PORT_3, &Light3)
+    BP.get_sensor(PORT_3, &Light3);
     std::cout << Light3.reflected << std::endl;
     if (Light3.reflected > 1800) {
-      BP.set_motor_dps(PORT_C, 0);
-      BP.set_motor_dps(PORT_B, 200);
+      BP.set_motor_dps(PORT_B, 0);
+      BP.set_motor_dps(PORT_C, 400);
       
       //linkerwiel
     } else {
-      BP.set_motor_dps(PORT_B, 0);
-      BP.set_motor_dps(PORT_C, 200);
+      BP.set_motor_dps(PORT_C, 0);
+      BP.set_motor_dps(PORT_B, 400);
+      
       //rechterwiel
     }
-    usleep(10000);
+    
+    usleep(5*1000);//1000 = 1 millisecond
   }
 
   BP.set_motor_dps(PORT_B, 0);
   BP.set_motor_dps(PORT_C, 0);
-
-  // for (unsigned int i = 0; i < 10000; i++) {
-  //   error = 0;
-    
-  //   if(BP.get_sensor(PORT_3, &Light3)){
-  //     error++;
-  //   }else{
-  //     std::cout <<  "Light sensor (S3): reflected: " << Light3.reflected << std::endl;
-  //   }
-    
-  //   usleep(2000);
-  // }
 }
 
 // Signal handler that will be called when Ctrl+C is pressed to stop the program
