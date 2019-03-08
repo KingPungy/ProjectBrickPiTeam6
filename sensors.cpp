@@ -23,6 +23,7 @@
 #include <stdio.h>      // for printf
 #include <unistd.h>     // for usleep
 #include <signal.h>     // for catching exit signals
+#include <iostream>
 
 BrickPi3 BP;
 
@@ -30,40 +31,49 @@ void exit_signal_handler(int signo);
 
 int main(){
   signal(SIGINT, exit_signal_handler); // register the exit function for Ctrl+C
-  
-  BP.detect(); // Make sure that the BrickPi3 is communicating and that the firmware is compatible with the drivers.
-  
   int error;
   
+  BP.detect(); // Make sure that the BrickPi3 is communicating and that the firmware is compatible with the drivers.
+  // Motors
+  BP.offset_motor_encoder(PORT_B, BP.get_motor_encoder(PORT_B));
+  BP.offset_motor_encoder(PORT_C, BP.get_motor_encoder(PORT_C));
+  
+  // Sensors
   BP.set_sensor_type(PORT_3, SENSOR_TYPE_NXT_LIGHT_ON);
-  BP.set_sensor_type(PORT_4, SENSOR_TYPE_NXT_ULTRASONIC);
-  
-  sensor_ultrasonic_t Ultrasonic4;
-  sensor_light_t      Light3;
-  
-  while(true){
-    error = 0;
-    
-    if(BP.get_sensor(PORT_2, &Ultrasonic4)){
-      error++;
-    }else{
-      printf("Ultrasonic sensor (S2): CM %5.1f Inches %5.1f   ", Ultrasonic2.cm, Ultrasonic2.inch);
-    }
-    
-    if(BP.get_sensor(PORT_3, &Light3)){
-      error++;
-    }else{
-      printf("Light sensor (S3): reflected %4d   ", Light3.reflected);
-    }
+  sensor_light_t Light3;
+  // BP.set_sensor_type(PORT_4, SENSOR_TYPE_NXT_ULTRASONIC);
+  // sensor_ultrasonic_t Ultrasonic4;
 
-    if(error == 4){
-      printf("Waiting for sensors to be configured");
+  for (unsigned int i = 0; i < 5000; i++) {
+    BP.get_sensor(PORT_3, &Light3)
+    std::cout << Light3.reflected << std::endl;
+    if (Light3.reflected > 1800) {
+      BP.set_motor_dps(PORT_C, 0);
+      BP.set_motor_dps(PORT_B, 200);
+      
+      //linkerwiel
+    } else {
+      BP.set_motor_dps(PORT_B, 0);
+      BP.set_motor_dps(PORT_C, 200);
+      //rechterwiel
     }
-    
-    printf("\n");
-    
-    usleep(20000);
+    usleep(10000);
   }
+
+  BP.set_motor_dps(PORT_B, 0);
+  BP.set_motor_dps(PORT_C, 0);
+
+  // for (unsigned int i = 0; i < 10000; i++) {
+  //   error = 0;
+    
+  //   if(BP.get_sensor(PORT_3, &Light3)){
+  //     error++;
+  //   }else{
+  //     std::cout <<  "Light sensor (S3): reflected: " << Light3.reflected << std::endl;
+  //   }
+    
+  //   usleep(2000);
+  // }
 }
 
 // Signal handler that will be called when Ctrl+C is pressed to stop the program

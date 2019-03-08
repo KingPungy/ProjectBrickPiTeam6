@@ -13,13 +13,13 @@
             },
             "problemMatcher": [],
             "presentation": {
-                "echo": false,
+                "echo": true,
             }
         },
         {
             "label": "transfer_files",
             "type": "shell",
-            "command": "pscp -r -l pi -pw robots1234 '${workspaceFolder}' '169.254.101.211:/home/pi/Desktop/BLokCGitHub'",
+            "command": "pscp -r -l pi -pw robots1234 \"${workspaceFolder}\" 169.254.101.211:/home/pi/Desktop/BLokCGitHub",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -30,6 +30,7 @@
                 "echo": false,
             }
         },
+        
         {
             "label": "compile_run",
             "type": "shell",
@@ -62,7 +63,7 @@
         {
             "label": "init_task",
             "type": "shell",
-            "command": "pscp -r -l pi -pw robots1234 '${workspaceFolder}' '169.254.101.211:/home/pi/Desktop/BLokCGitHub'",
+            "command": "pscp -r -l pi -pw robots1234 \"${workspaceFolder}\" 169.254.101.211:/home/pi/Desktop/BLokCGitHub",
             "group": {
                 "kind": "build",
                 "isDefault": true
