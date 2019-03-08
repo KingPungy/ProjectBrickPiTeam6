@@ -48,13 +48,13 @@ int main(){
     BP.get_sensor(PORT_3, &Light3);
     std::cout << Light3.reflected << std::endl;
     if (Light3.reflected > 1800) {
-      BP.set_motor_dps(PORT_B, 0);
-      BP.set_motor_dps(PORT_C, 400);
+      BP.set_motor_dps(PORT_C, 0);
+      BP.set_motor_dps(PORT_B, 400);
       
       //linkerwiel
     } else {
-      BP.set_motor_dps(PORT_C, 0);
-      BP.set_motor_dps(PORT_B, 400);
+      BP.set_motor_dps(PORT_B, 0);
+      BP.set_motor_dps(PORT_C, 400);
       
       //rechterwiel
     }
