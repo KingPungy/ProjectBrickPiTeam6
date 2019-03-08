@@ -4,25 +4,73 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "transfer_files",
+            "label": "delete_files",
             "type": "shell",
-            "command": "pscp -r -pw raspberry '${workspaceFolder}' 'pi@192.168.1.50:/home/pi/Desktop/BLokCGitHub'",
+            "command": "plink -l pi -pw robots1234 169.254.101.211 bash /home/pi/Desktop/BLokCGitHub/ProjectBrickPiTeam6/.ignore/delete_files",
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
-            "problemMatcher": []
+            "problemMatcher": [],
+            "presentation": {
+                "echo": false,
+            }
         },
         {
-            "label": "connect_ssh",
+            "label": "transfer_files",
             "type": "shell",
-            "command": "plink -l pi -pw raspberry 192.168.1.50 bash /home/pi/Desktop/BLokCGitHub/ProjectBrickPiTeam6/compile_run",
+            "command": "pscp -r -l pi -pw robots1234 '${workspaceFolder}' '169.254.101.211:/home/pi/Desktop/BLokCGitHub'",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "dependsOn": ["delete_files"],
+            "presentation": {
+                "echo": false,
+            }
+        },
+        {
+            "label": "compile_run",
+            "type": "shell",
+            "command": "plink -l pi -pw robots1234 169.254.101.211 bash /home/pi/Desktop/BLokCGitHub/ProjectBrickPiTeam6/.ignore/compile_run",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "echo": false,
+                "clear": true
+            }
+        },
+        {
+            "label": "transfer_connect_compile_run",
+            "type": "shell",
+            "command": "plink -l pi -pw robots1234 169.254.101.211 bash /home/pi/Desktop/BLokCGitHub/ProjectBrickPiTeam6/.ignore/compile_run",
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
             "dependsOn": ["transfer_files"],
-            "problemMatcher": []
+            "problemMatcher": [],
+            "presentation": {
+                "echo": false,
+                "clear": true
+            }
+        }, 
+        {
+            "label": "init_task",
+            "type": "shell",
+            "command": "pscp -r -l pi -pw robots1234 '${workspaceFolder}' '169.254.101.211:/home/pi/Desktop/BLokCGitHub'",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "echo": false,
+            }
         }
     ]
 }

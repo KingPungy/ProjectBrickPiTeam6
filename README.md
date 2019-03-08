@@ -1,5 +1,5 @@
 # ProjectBrickPiTeam6
-Repository voor het 3e project van de afstudeer richting TI.
+Repository voor het project in jaar 1, blok C van de afstudeer richting TI.
 
 Collaborators/Teamleden
 
