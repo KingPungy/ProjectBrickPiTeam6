@@ -1,8 +1,6 @@
 /*
-Authors: Sander Boot, Scott Timmermans, Tobias van den Hoogen, Mike Hoogendoorn, Ruben Zwietering
-
-
-
+Authors: Sander Boot, Scott Timmermans, Tobias van den Hoogen, Mike Hoogendoorn,
+Ruben Zwietering
 
 
 */

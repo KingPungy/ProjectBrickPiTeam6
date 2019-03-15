@@ -25,12 +25,13 @@
                 "isDefault": true
             },
             "problemMatcher": [],
-            "dependsOn": ["delete_files"],
+            "dependsOn": [
+                "delete_files"
+            ],
             "presentation": {
                 "echo": false,
             }
         },
-        
         {
             "label": "compile_run",
             "type": "shell",
@@ -53,13 +54,15 @@
                 "kind": "build",
                 "isDefault": true
             },
-            "dependsOn": ["transfer_files"],
+            "dependsOn": [
+                "transfer_files"
+            ],
             "problemMatcher": [],
             "presentation": {
                 "echo": false,
                 "clear": true
             }
-        }, 
+        },
         {
             "label": "init_task",
             "type": "shell",
@@ -71,6 +74,19 @@
             "problemMatcher": [],
             "presentation": {
                 "echo": false,
+            }
+        },
+        {
+            "label": "start_controller_driver",
+            "type": "shell",
+            "command": "plink -l pi -pw robots1234 169.254.101.211 bash /home/pi/Desktop/BLokCGitHub/ProjectBrickPiTeam6/.ignore/control_driver",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "echo": true,
             }
         }
     ]
