@@ -2,36 +2,43 @@
 Authors: Sander Boot, Scott Timmermans, Tobias van den Hoogen, Mike Hoogendoorn,
 Ruben Zwietering
 
-
 */
-#include "BrickPi.hpp"
+#include <signal.h>      // for catching exit signals
+#include <stdio.h>       // for printf
+#include <unistd.h>      // for usleep
+#include "BrickPi3.cpp"  // for BrickPi3
+#include "controller.hpp"
+
+BrickPi3 BP;
+
+void exit_signal_handler(int signo);
 
 int main() {
-    signal(SIGINT,
-           exit_signal_handler);  // register the exit function for Ctrl+C
-    int error;
+    signal(SIGINT, exit_signal_handler);  // register exit for Ctrl+C
 
-    setup_motors_sensors();
+    BP.detect();
+    classControl controller;
 
-    for (unsigned int i = 0; i < 5000; i++) {
-        BP.get_sensor(PORT_3, &Light3);
-        std::cout << Light3.reflected << std::endl;
-        if (Light3.reflected > 1800) {
-            BP.set_motor_dps(PORT_C, 0);
-            BP.set_motor_dps(PORT_B, 400);
+    while (true) {
+        controller.update();
+        // Use the encoder value from motor A to control motors B, C, and D
+        // BP.set_motor_dps(PORT_C, PositionA);
+        // if (controller.joyX > 0) {
+        //     BP.set_motor_dps(PORT_B, controller.joyY * 4 + controller.joyX *
+        //     4); BP.set_motor_dps(PORT_C, controller.joyY * 4);
+        // } else if (controller.joyX < 0) {
+        //     BP.set_motor_dps(PORT_B, controller.joyY * 4);
+        //     BP.set_motor_dps(PORT_C,
+        //                      controller.joyY * 4 + abs(controller.joyX * 4));
+        // }
+        // else {
+        BP.set_motor_dps(PORT_B, controller.joyY * 4 + controller.joyX * 4);
+        BP.set_motor_dps(PORT_C, controller.joyY * 4 - controller.joyX * 4);
+        // }BP.set_motor_dps(PORT_B, controller.joyY * 4);
+        BP.set_motor_dps(PORT_C, controller.joyY * 4 + controller.joyX * 4);
 
-            // linkerwiel
-        } else {
-            BP.set_motor_dps(PORT_B, 0);
-            BP.set_motor_dps(PORT_C, 400);
-
-            // rechterwiel
-        }
-
-        usleep(5 * 1000);  // 1000 = 1 millisecond
+        // usleep(10 * 1000);
     }
-
-    BP.set_motor_dps(PORT_B, 0);
     BP.set_motor_dps(PORT_C, 0);
 }
 
