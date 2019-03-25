@@ -13,6 +13,7 @@ void setup_motors_sensors() {
 
     // Sensors
     BP.set_sensor_type(PORT_3, SENSOR_TYPE_NXT_LIGHT_ON);
+    
     sensor_light_t Light3;
     // BP.set_sensor_type(PORT_4, SENSOR_TYPE_NXT_ULTRASONIC);
     // sensor_ultrasonic_t Ultrasonic4;

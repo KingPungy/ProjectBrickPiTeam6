@@ -1,8 +1,6 @@
 /*
-Authors: Sander Boot, Scott Timmermans, Tobias van den Hoogen, Mike Hoogendoorn, Ruben Zwietering
-
-
-
+Authors: Sander Boot, Scott Timmermans, Tobias van den Hoogen, Mike Hoogendoorn,
+Ruben Zwietering
 
 
 */
@@ -18,17 +16,15 @@ int main() {
     for (unsigned int i = 0; i < 5000; i++) {
         BP.get_sensor(PORT_3, &Light3);
         std::cout << Light3.reflected << std::endl;
-        if (Light3.reflected > 1800) {
+        if (Light3.reflected > 1800) { // Linker Wiel
             BP.set_motor_dps(PORT_C, 0);
             BP.set_motor_dps(PORT_B, 400);
 
-            // linkerwiel
-        } else {
+        } else { // Rechter Wiel
             BP.set_motor_dps(PORT_B, 0);
             BP.set_motor_dps(PORT_C, 400);
 
-            // rechterwiel
-        }
+        } 
 
         usleep(5 * 1000);  // 1000 = 1 millisecond
     }
