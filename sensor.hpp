@@ -5,11 +5,11 @@
 #include <stdio.h>   // for printf
 #include <unistd.h>  // for usleep
 #include <iostream>
-#include "BrickPi3.cpp"
+
 
 class sensors {
    public:
-    int black, white average;
+    int black, white, average;
     int lightValue;
     int distance;
     bool touchSensor;

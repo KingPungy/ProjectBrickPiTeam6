@@ -9,7 +9,7 @@ sensors::sensors() {
 
 void sensors::update() {
     BP.get_sensor(PORT_1, &Touch1);
-    touchSensor = true;
+    touchSensor = !(Touch1.pressed);
     BP.get_sensor(PORT_3, &Light3);
     lightValue = Light3.reflected;
     BP.get_sensor(PORT_4, &Ultrasonic4);
@@ -25,10 +25,10 @@ void sensors::calibrate() {
             break;
         }
     }
-
+    
     while (true) {
         // wait for user input (druk sensor Nxt)
-        if (BP.get_sensor(PORT_1, &Touch1)) {
+        if (!(BP.get_sensor(PORT_1, &Touch1))) {
             update();
             black = lightValue;
             break;

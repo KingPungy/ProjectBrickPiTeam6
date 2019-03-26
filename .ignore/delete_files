@@ -1,1 +1,0 @@
-cd /home/pi/Desktop/BLokCGitHub; cd ProjectBrickPiTeam6; if [ "$?" = "0" ]; then cd ../; rm -r ProjectBrickPiTeam6; echo "deleted old files"; else echo "cannot delete old files"; fi;
