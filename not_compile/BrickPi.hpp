@@ -7,6 +7,9 @@
 #include <iostream>
 #include "BrickPi3.cpp"
 
+BrickPi3 BP;
+
+sensor_light_t Light3;
 void setup_motors_sensors();
 void exit_signal_handler(int signo);
 
