@@ -7,17 +7,21 @@
 #include <iostream>
 #include "BrickPi3.cpp"
 
-class sensors
-{
-    public:
-
+class sensors {
+   public:
     int black, white average;
     int lightValue;
+    int distance;
+    bool touchSensor;
+
+    sensor_touch_t Touch1;
+    sensor_light_t Light3;
+    sensor_ultrasonic_t Ultrasonic4;
 
     sensors();
 
     void update();
-    
+
     void calibrate();
 };
 
