@@ -1,0 +1,93 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "delete_files",
+            "type": "shell",
+            "command": "plink -l pi -pw robots1234 169.254.101.211 bash /home/pi/Desktop/BLokCGitHub/ProjectBrickPiTeam6/.ignore/delete_files",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "echo": true,
+            }
+        },
+        {
+            "label": "transfer_files",
+            "type": "shell",
+            "command": "pscp -r -l pi -pw robots1234 \"${workspaceFolder}\" 169.254.101.211:/home/pi/Desktop/BLokCGitHub",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "dependsOn": [
+                "delete_files"
+            ],
+            "presentation": {
+                "echo": false,
+            }
+        },
+        {
+            "label": "compile_run",
+            "type": "shell",
+            "command": "plink -l pi -pw robots1234 169.254.101.211 bash /home/pi/Desktop/BLokCGitHub/ProjectBrickPiTeam6/.ignore/compile_run",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "echo": false,
+                "clear": true
+            }
+        },
+        {
+            "label": "transfer_connect_compile_run",
+            "type": "shell",
+            "command": "plink -l pi -pw robots1234 169.254.101.211 bash /home/pi/Desktop/BLokCGitHub/ProjectBrickPiTeam6/.ignore/compile_run",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "dependsOn": [
+                "transfer_files"
+            ],
+            "problemMatcher": [],
+            "presentation": {
+                "echo": false,
+                "clear": true
+            }
+        },
+        {
+            "label": "init_task",
+            "type": "shell",
+            "command": "pscp -r -l pi -pw robots1234 \"${workspaceFolder}\" 169.254.101.211:/home/pi/Desktop/BLokCGitHub",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "echo": false,
+            }
+        },
+        {
+            "label": "start_controller_driver",
+            "type": "shell",
+            "command": "plink -l pi -pw robots1234 169.254.101.211 bash /home/pi/Desktop/BLokCGitHub/ProjectBrickPiTeam6/.ignore/control_driver",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "echo": true,
+            }
+        }
+    ]
+}
