@@ -1,0 +1,1 @@
+cd /home/pi/Desktop/BLokCGitHub/ProjectBrickPiTeam6; files=""; for filename in `find *.cpp`; do files="$files $filename"; done; g++ --std=c++17 $files -o main; echo "compiled files"; echo; ./main;

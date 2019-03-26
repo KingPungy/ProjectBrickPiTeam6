@@ -6,46 +6,37 @@ Ruben Zwietering
 #include <signal.h>      // for catching exit signals
 #include <stdio.h>       // for printf
 #include <unistd.h>      // for usleep
-#include "BrickPi3.cpp"  // for BrickPi3
-#include "controller.hpp"
+//#include "BrickPi3.h"  // for BrickPi3
 
-BrickPi3 BP;
+// Class headers
+#include "controller.hpp" // Controller input Class
+#include "In_Out.hpp"     // IO input Class
 
 void exit_signal_handler(int signo);
-
+// classControl controller;
+IO dotIO;
+    
 int main() {
     signal(SIGINT, exit_signal_handler);  // register exit for Ctrl+C
 
-    BP.detect();
-    classControl controller;
+    // usleep(5 * 1000 * 1000);
 
-    while (true) {
-        controller.update();
-        // Use the encoder value from motor A to control motors B, C, and D
-        // BP.set_motor_dps(PORT_C, PositionA);
-        // if (controller.joyX > 0) {
-        //     BP.set_motor_dps(PORT_B, controller.joyY * 4 + controller.joyX *
-        //     4); BP.set_motor_dps(PORT_C, controller.joyY * 4);
-        // } else if (controller.joyX < 0) {
-        //     BP.set_motor_dps(PORT_B, controller.joyY * 4);
-        //     BP.set_motor_dps(PORT_C,
-        //                      controller.joyY * 4 + abs(controller.joyX * 4));
-        // }
-        // else {
-        BP.set_motor_dps(PORT_B, controller.joyY * 4 + controller.joyX * 4);
-        BP.set_motor_dps(PORT_C, controller.joyY * 4 - controller.joyX * 4);
-        // }BP.set_motor_dps(PORT_B, controller.joyY * 4);
-        BP.set_motor_dps(PORT_C, controller.joyY * 4 + controller.joyX * 4);
-
-        // usleep(10 * 1000);
+    for (uint8_t i = 0; i < 1000000000; i++) {
+        dotIO.update();
+        dotIO.calcSpeed();
+        usleep(5 * 1000);
     }
-    BP.set_motor_dps(PORT_C, 0);
+
+    dotIO.dpsB(0);
+    dotIO.dpsC(0);
 }
 
 // Signal handler that will be called when Ctrl+C is pressed to stop the program
 void exit_signal_handler(int signo) {
     if (signo == SIGINT) {
-        BP.reset_all();  // Reset everything so there are no run-away motors
+        dotIO.dpsA(0);
+        dotIO.dpsB(0);
+        dotIO.dpsC(0);  // Reset everything so there are no run-away motors
         exit(-2);
     }
 }
