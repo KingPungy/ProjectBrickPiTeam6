@@ -6,7 +6,7 @@
         {
             "label": "delete_files",
             "type": "shell",
-            "command": "plink -l pi -pw Groep6Pi 145.89.96.121 bash /home/pi/Desktop/BLokCGitHub/ProjectBrickPiTeam6/.ignore/delete_files",
+            "command": "plink -l pi -pw Groep6Pi groep6-dex bash /home/pi/BrickPiProject/code/.ignore/delete_files",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -19,7 +19,7 @@
         {
             "label": "transfer_files",
             "type": "shell",
-            "command": "pscp -r -l pi -pw Groep6Pi \"${workspaceFolder}\" 145.89.96.121:/home/pi/Desktop/BLokCGitHub",
+            "command": "pscp -r -l pi -pw Groep6Pi \"${workspaceFolder}/code\" groep6-dex:/home/pi/BrickPiProject",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -35,7 +35,7 @@
         {
             "label": "compile_run",
             "type": "shell",
-            "command": "plink -l pi -pw Groep6Pi 145.89.96.121 bash /home/pi/Desktop/BLokCGitHub/ProjectBrickPiTeam6/.ignore/compile_run",
+            "command": "plink -l pi -pw Groep6Pi groep6-dex bash /home/pi//BrickPiProject/code/.ignore/compile_run",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -49,7 +49,7 @@
         {
             "label": "transfer_connect_compile_run",
             "type": "shell",
-            "command": "plink -l pi -pw Groep6Pi 145.89.96.121 bash /home/pi/Desktop/BLokCGitHub/ProjectBrickPiTeam6/.ignore/compile_run",
+            "command": "plink -l pi -pw Groep6Pi groep6-dex bash /home/pi//BrickPiProject/code/.ignore/compile_run",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -66,7 +66,7 @@
         {
             "label": "init_task",
             "type": "shell",
-            "command": "pscp -r -l pi -pw Groep6Pi \"${workspaceFolder}\" 145.89.96.121:/home/pi/Desktop/BLokCGitHub",
+            "command": "pscp -r -l pi -pw Groep6Pi \"${workspaceFolder}/code\" groep6-dex:/home/pi//BrickPiProject",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -79,7 +79,7 @@
         {
             "label": "start_controller_driver",
             "type": "shell",
-            "command": "plink -l pi -pw Groep6Pi 145.89.96.121 bash /home/pi/Desktop/BLokCGitHub/ProjectBrickPiTeam6/.ignore/control_driver",
+            "command": "plink -l pi -pw Groep6Pi groep6-dex bash /home/pi//BrickPiProject/code/.ignore/control_driver",
             "group": {
                 "kind": "build",
                 "isDefault": true

@@ -1,0 +1,10 @@
+cd /home/pi/BrickPiProject/code/
+files="src/*"
+for filename in $(find *.cpp)
+do 
+    files="$files $filename"
+done
+mkdir bin
+g++ --std=c++17 $files -o bin/main
+echo "compiled files"
+echo; ./bin/main
