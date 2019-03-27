@@ -8,8 +8,8 @@ class IO {
    public:
     // Light Sensor variables
     int black = 2200;
-    int white = 1200;
-    float average = 1700;
+    int white = 1300;
+    float average = 1750;
     int lightValue;
     // Ultra-Sonic-Sensor Variables
     int distance;
@@ -24,7 +24,7 @@ class IO {
     // Motor Variables
     bool drive = true;
 
-    int MAX_SPEED = 370;
+    int MAX_SPEED = 400;
 
     BrickPi3 BP;
 

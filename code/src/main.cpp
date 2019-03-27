@@ -18,13 +18,44 @@ IO dotIO;
     
 int main() {
     signal(SIGINT, exit_signal_handler);  // register exit for Ctrl+C
+    
+    
 
-    // usleep(5 * 1000 * 1000);
-
-    for (uint8_t i = 0; i < 1000000000; i++) {
+    while(true) {
+        usleep(1 * 1000);
         dotIO.update();
-        dotIO.calcSpeed();
-        usleep(5 * 1000);
+        if (!dotIO.touchSensor1)
+        {
+            printf("touch sensor 1: %d\n", dotIO.lightValue);
+            dotIO.black = dotIO.lightValue;
+        }
+        if (!dotIO.touchSensor2)
+        {
+            printf("touch sensor 2: %d\n", dotIO.lightValue);
+            dotIO.white = dotIO.lightValue;
+        }
+        if (!dotIO.touchSensor1 || !dotIO.touchSensor2)
+        {
+            dotIO.dpsB(0);
+            dotIO.dpsC(0);
+            continue;
+        }
+
+        int speed = dotIO.calcSpeed() / 2;
+        
+        if (speed < 0){
+            speed -= 50;
+            dotIO.dpsB(100-abs(speed));
+            dotIO.dpsC(abs(speed));
+        }else if(speed > 0){
+            speed += 50;
+            dotIO.dpsB(speed);
+            dotIO.dpsC(100-abs(speed));
+        }
+        else if (speed == 0){
+            dotIO.dpsB(50);
+            dotIO.dpsC(50);
+        }
     }
 
     dotIO.dpsB(0);
@@ -33,10 +64,10 @@ int main() {
 
 // Signal handler that will be called when Ctrl+C is pressed to stop the program
 void exit_signal_handler(int signo) {
-    if (signo == SIGINT) {
+        printf("signal: %d\n", signo);
         dotIO.dpsA(0);
         dotIO.dpsB(0);
         dotIO.dpsC(0);  // Reset everything so there are no run-away motors
         exit(-2);
-    }
+    
 }

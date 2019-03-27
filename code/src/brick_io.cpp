@@ -7,6 +7,7 @@ IO::IO() {
     BP.detect();
 
     BP.set_sensor_type(PORT_1, SENSOR_TYPE_TOUCH);
+    BP.set_sensor_type(PORT_2, SENSOR_TYPE_TOUCH);
     BP.set_sensor_type(PORT_3, SENSOR_TYPE_NXT_LIGHT_ON);
     BP.set_sensor_type(PORT_4, SENSOR_TYPE_NXT_ULTRASONIC);
 }
@@ -73,23 +74,20 @@ void IO::resetEncoders() {
     BP.reset_motor_encoder(PORT_C);
 }
 
-void IO::dpsA(int speed) {
+void IO::dpsA(int speed) { // extra motor
     // speed is between -100% and 100%;
-    if (speed < -100) speed = -100;
     if (speed > 100) speed = 100;
     BP.set_motor_dps(PORT_A, (speed * MAX_SPEED)/100);
 }
 
 void IO::dpsB(int speed) { // linker motor
     // speed is between 0% and 100%;
-    if (speed < -100) speed = -100;
     if (speed > 100) speed = 100;
-    BP.set_motor_dps(PORT_B, (speed * MAX_SPEED)/100);
+    BP.set_motor_dps(PORT_B, ((speed * MAX_SPEED)/100));
 }
 
 void IO::dpsC(int speed) { // rechter motor
     // speed is between 0% and 100%;
-    if (speed < -100) speed = -100;
     if (speed > 100) speed = 100;
-    BP.set_motor_dps(PORT_C, (speed * MAX_SPEED)/100);
+    BP.set_motor_dps(PORT_C, ((speed * MAX_SPEED)/100));
 }
