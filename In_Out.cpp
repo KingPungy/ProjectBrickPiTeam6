@@ -51,15 +51,16 @@ int IO::calcSpeed(){
     //if (lightValue > black){black = lightValue; average = (white + black)/2}
     //if (lightValue < white){white = lightValue; average = (white + black)/2} 
 
-    int margin = lightValue - average;
+
+    float margin = lightValue - average;
     int percentageMarge;
 
 
     if (margin > 0) { // te zwart
-        percentageMarge = ((float) margin / (black - average) ) * 100.0;
+        percentageMarge = (margin / (black - average) ) * 100.0;
         std::cout << "black: " << percentageMarge << std::endl;
     } else { //te wit
-        percentageMarge = ((float) abs(margin) / (average - white) ) * 100.0;
+        percentageMarge = (abs(margin) / (average - white) ) * 100.0;
         std::cout << "white: " << percentageMarge << std::endl;
     }
     return 1;

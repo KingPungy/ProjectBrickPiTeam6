@@ -9,7 +9,7 @@ class IO {
     // Light Sensor variables
     int black = 2200;
     int white = 1200;
-    int average = 1700;
+    float average = 1700;
     int lightValue;
     // Ultra-Sonic-Sensor Variables
     int distance;
