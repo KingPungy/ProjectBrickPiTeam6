@@ -31,6 +31,7 @@ int main() {
 				while(Ultrasonic4.cm < 10){
 					BP.set_motor_dps(PORT_B, 0);
 					BP.set_motor_dps(PORT_C, 0);
+					BP.get_sensor(PORT_4, &Ultrasonic4);
 				}
 			}
 			BP.set_motor_dps(PORT_B, speed);
@@ -38,9 +39,10 @@ int main() {
 			input = mb.readMessage();  //blokkeert niet
 			if(input != "") cout << endl << input << endl;
 				if(strcmp(input.c_str(), "UP") == 0){
-					if(speed < 4000){
-						speed += 200;
+					if(speed < 0){
+						speed = 0;
 					}
+					speed += 200;
 					BP.set_motor_dps(PORT_B, speed);
 					BP.set_motor_dps(PORT_C, speed);
 				}
@@ -60,8 +62,8 @@ int main() {
 				}
 				if(strcmp(input.c_str(), "DOWN") == 0){
 					speed = -240;
-					BP.set_motor_dps(PORT_B, -240);
-					BP.set_motor_dps(PORT_C, -240);
+					BP.set_motor_dps(PORT_B, speed);
+					BP.set_motor_dps(PORT_C, speed);
 				}
 				if(strcmp(input.c_str(), "FIRE") == 0){
 					speed = 0;
