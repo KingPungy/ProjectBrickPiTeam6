@@ -23,28 +23,6 @@ void IO::update() {
     distance = Ultrasonic4.cm;
 }
 
-void IO::calibrate() {
-    while (true) {
-        // wait for user input (druk sensor Nxt)
-        if (!(BP.get_sensor(PORT_2, Touch2))) {
-            update();
-            white = lightValue;
-            break;
-        }
-        usleep(10 * 1000);
-    }
-    
-    while (true) {
-        // wait for user input (druk sensor Nxt)
-        if (!(BP.get_sensor(PORT_1, Touch1))) {
-            update();
-            black = lightValue;
-            break;
-        }
-        usleep(10 * 1000);
-    }
-    average = white + ((black - white) / 2);
-}
 
 int IO::calcSpeed(){
     // foutwaarde is lightValue - average
@@ -52,21 +30,34 @@ int IO::calcSpeed(){
     //if (lightValue > black){black = lightValue; average = (white + black)/2}
     //if (lightValue < white){white = lightValue; average = (white + black)/2} 
 
-
+/*
     float margin = lightValue - average;
     int percentageMarge;
 
 
     if (margin > 0) { // te zwart
         percentageMarge = (margin / (black - average) ) * 100.0;
-        std::cout << "black: " << percentageMarge << std::endl;
+        //std::cout << "black: " << percentageMarge << std::endl;
     } else { //te wit
         percentageMarge = (margin / (average - white) ) * 100.0;
-        std::cout << "white: " << percentageMarge << std::endl;
+        //std::cout << "white: " << percentageMarge << std::endl;
     }
     return percentageMarge;
+*/
+    int maxspeed = 100;
+    int speed = (int)mapf(lightValue, white, black, -maxspeed, maxspeed);
+
+    if (speed < -maxspeed)
+        speed = -maxspeed;
+    else if (speed > maxspeed)
+        speed = maxspeed;
+    return speed;
 }
 
+float IO::mapf(float v, float min0, float max0, float min1, float max1)
+{
+    return min1 + (max1 - min1) * ((v - min0) / (max0 - min0));
+}
 
 void IO::resetEncoders() {
     BP.reset_motor_encoder(PORT_A);

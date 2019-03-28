@@ -7,4 +7,4 @@ done
 mkdir bin
 g++ --std=c++17 $files -o bin/main
 echo "compiled files"
-echo; ./bin/main
+#echo; #./bin/main

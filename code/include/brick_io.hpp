@@ -24,7 +24,7 @@ class IO {
     // Motor Variables
     bool drive = true;
 
-    int MAX_SPEED = 400;
+    int MAX_SPEED = 360;
 
     BrickPi3 BP;
 
@@ -32,8 +32,6 @@ class IO {
 
     void update();
     
-    void calibrate();
-
     int calcSpeed();
 
     void resetEncoders();
@@ -41,6 +39,8 @@ class IO {
     void dpsA(int speed);
     void dpsB(int speed);
     void dpsC(int speed);
+
+    float mapf(float v, float min0, float max0, float min1, float max1);
 };
 
 #endif
