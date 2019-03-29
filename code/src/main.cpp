@@ -40,7 +40,10 @@ char getch(int vmin = 1, int vtime = 0)
 int main(int argc, char* argv[]) {
     signal(SIGINT, exit_signal_handler);  // register exit for Ctrl+C
 
+    int args = 1;
+
     bool manual = false;
+    uint8_t check_speed = 0;
 
     if (argc > 1)
         if (argv[1][0] == '-')
@@ -48,7 +51,13 @@ int main(int argc, char* argv[]) {
                 switch (argv[1][i])
                 {
                     case 'm': manual = true; break;
+		    case 's': check_speed = ++args; break;
                 }
+    if (check_speed && check_speed < argc)
+	dotIO.MAX_SPEED = atoi(argv[check_speed]);
+
+    printf("max speed: %d\n", dotIO.MAX_SPEED);
+    printf("manual mode: %s\n", manual ? "on" : "off");
 
     if (manual)
     {
@@ -215,8 +224,7 @@ int main(int argc, char* argv[]) {
                 continue;
             }
 
-            if (dotIO.distance < 5) {
-                
+            if (dotIO.distance < 6) {
                 dotIO.dpsB(0);
                 dotIO.dpsC(0);
 
