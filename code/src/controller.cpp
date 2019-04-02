@@ -1,4 +1,4 @@
-#include "controller.hpp"
+#include "../include/controller.hpp"
 
 classControl::classControl() { fd = open("/dev/input/js0", O_RDONLY); }
 

@@ -1,0 +1,8 @@
+cd /home/pi/BrickPiProject/code/
+if [ "$?" = "0" ]
+then cd ../
+    rm -r code
+    echo "deleted old files"
+else
+    echo "cannot delete old files"
+fi
