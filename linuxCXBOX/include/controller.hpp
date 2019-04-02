@@ -3,15 +3,18 @@
 
 #include <fcntl.h>
 #include <unistd.h>
+#include <stdio.h>
 #include <bitset>
 #include <fstream>
 #include <iostream>
 
+
+
 struct js_event {
-    uint32_t buttons;
-    int32_t joyX;
-    uint8_t joyY;
-    uint8_t uselessStuff;
+    uint32_t time;
+    int16_t value;
+    uint8_t type;
+    uint8_t number;
 };
 
 class classControl {
@@ -19,8 +22,10 @@ class classControl {
     bool a, b, x, y;
     bool lb, rb;
     bool home, back, start;
-    bool bjl, bjr;
-    int joyX, joyY;
+    bool lJb, rJb;
+    int lJoyX, lJoyY, rJoyX, rJoyY;
+    int rTrig, lTrig;
+    int dLeftRight, dUpDown;
     int fd;
     struct js_event e;
 
