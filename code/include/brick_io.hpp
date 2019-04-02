@@ -4,7 +4,6 @@
 #include "../include/BrickPi3.h"
 
 class IO {
-
    public:
     // Light Sensor variables
     int black = 2200;
@@ -15,6 +14,9 @@ class IO {
     int distance;
     // Touch Sensors Varables
     bool touchSensor1, touchSensor2;
+
+    // variables for motor speed
+    int speedA, speedB, speedC;
 
     // Sensor write variables
     sensor_touch_t Touch1, Touch2;
@@ -31,7 +33,7 @@ class IO {
     IO();
 
     void update();
-    
+
     int calcSpeed();
 
     void resetEncoders();

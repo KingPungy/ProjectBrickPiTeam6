@@ -5,9 +5,8 @@ Ruben Zwietering
 */
 #include <signal.h>  // for catching exit signals
 #include <stdio.h>   // for printf
-#include <unistd.h>  // for usleep
 #include <termios.h>
-//#include "BrickPi3.h"  // for BrickPi3
+#include <unistd.h>  // for usleep
 
 // Class headers
 #include "../include/brick_io.hpp"    // IO input Class
@@ -17,10 +16,9 @@ void exit_signal_handler(int signo);
 // classControl controller;
 IO dotIO;
 
-char getch(int vmin = 1, int vtime = 0)
-{
+char getch(int vmin = 1, int vtime = 0) {
     char buf = 0;
-    struct termios temp = { 0 };
+    struct termios temp = {0};
 
     tcgetattr(STDOUT_FILENO, &temp);
 
@@ -33,7 +31,7 @@ char getch(int vmin = 1, int vtime = 0)
     read(STDOUT_FILENO, &buf, 1);
 
     tcsetattr(STDOUT_FILENO, TCSADRAIN, &temp);
-    
+
     return buf;
 }
 
@@ -47,20 +45,21 @@ int main(int argc, char* argv[]) {
 
     if (argc > 1)
         if (argv[1][0] == '-')
-            for (int i = 1; i < strlen(argv[1]); i++)
-                switch (argv[1][i])
-                {
-                    case 'm': manual = true; break;
-		    case 's': check_speed = ++args; break;
+            for (int i = 1; i < strlen(argv[1]); i++) switch (argv[1][i]) {
+                    case 'm':
+                        manual = true;
+                        break;
+                    case 's':
+                        check_speed = ++args;
+                        break;
                 }
     if (check_speed && check_speed < argc)
-	dotIO.MAX_SPEED = atoi(argv[check_speed]);
+        dotIO.MAX_SPEED = atoi(argv[check_speed]);
 
     printf("max speed: %d\n", dotIO.MAX_SPEED);
     printf("manual mode: %s\n", manual ? "on" : "off");
 
-    if (manual)
-    {
+    if (manual) {
         int speed = 50;
         int maxspeed = 100;
 
@@ -72,122 +71,91 @@ int main(int argc, char* argv[]) {
         int left = 0;
         int right = 0;
 
-        while (true)
-        {
+        while (true) {
             char buf = 0;
-            switch (buf = getch(0))
-            {
-                case 'w': case 'W':
-                    if (backward)
-                    {
+            switch (buf = getch(0)) {
+                case 'w':
+                case 'W':
+                    if (backward) {
                         forward = 0;
                         backward = 0;
-                    }
-                    else
-                    {
+                    } else {
                         forward = 1;
                         backward = 0;
                     }
-                break;
-                case 's': case 'S':
-                    if (forward)
-                    {
+                    break;
+                case 's':
+                case 'S':
+                    if (forward) {
                         forward = 0;
                         backward = 0;
-                    }
-                    else
-                    {
+                    } else {
                         forward = 0;
                         backward = 1;
                     }
-                break;
-                case 'a': case 'A':
-                    if (turn_right)
-                    {
+                    break;
+                case 'a':
+                case 'A':
+                    if (turn_right) {
                         turn_left = 0;
                         turn_right = 0;
-                    }
-                    else
-                    {
+                    } else {
                         turn_left = 1;
                         turn_right = 0;
                     }
-                break;
-                case 'd': case 'D':
-                    if (turn_left)
-                    {
+                    break;
+                case 'd':
+                case 'D':
+                    if (turn_left) {
                         turn_left = 0;
                         turn_right = 0;
-                    }
-                    else
-                    {
+                    } else {
                         turn_left = 0;
                         turn_right = 1;
                     }
-                break;
+                    break;
             }
 
-            if (turn_left)
-            {
-                if (forward)
-                {
+            if (turn_left) {
+                if (forward) {
                     left = speed;
                     right = maxspeed;
-                }
-                else if (backward)
-                {
+                } else if (backward) {
                     left = -speed;
                     right = -maxspeed;
-                }
-                else
-                {
+                } else {
                     left = 0;
                     right = maxspeed;
                 }
-            }
-            else if (turn_right)
-            {
-                if (forward)
-                {
+            } else if (turn_right) {
+                if (forward) {
                     left = maxspeed;
                     right = speed;
-                }
-                else if (backward)
-                {
+                } else if (backward) {
                     left = -maxspeed;
                     right = -speed;
-                }
-                else
-                {
+                } else {
                     left = maxspeed;
                     right = 0;
                 }
-            }
-            else
-            {
-                if (forward)
-                {
+            } else {
+                if (forward) {
                     left = maxspeed;
                     right = maxspeed;
-                }
-                else if (backward)
-                {
+                } else if (backward) {
                     left = -maxspeed;
                     right = -maxspeed;
-                }
-                else
-                {
+                } else {
                     left = 0;
                     right = 0;
                 }
             }
-            
 
             if (left > maxspeed)
                 left = maxspeed;
             else if (left < -maxspeed)
                 left = -maxspeed;
-            
+
             if (right > maxspeed)
                 right = maxspeed;
             else if (right < -maxspeed)
@@ -196,9 +164,7 @@ int main(int argc, char* argv[]) {
             dotIO.dpsB(left);
             dotIO.dpsC(right);
         }
-    }
-    else
-    {
+    } else {
         while (true) {
             usleep(1 * 1000);
             dotIO.update();
@@ -207,8 +173,8 @@ int main(int argc, char* argv[]) {
 
             int speed = speed2 / 2;
 
-
-            printf("\rdistance: %8d, brightness: %8d, speed: %16d", dotIO.distance, dotIO.lightValue, speed2);
+            printf("\rdistance: %8d, brightness: %8d, speed: %16d",
+                   dotIO.distance, dotIO.lightValue, speed2);
             if (!dotIO.touchSensor1) {
                 // printf("touch sensor 1: %d\n", dotIO.lightValue);
                 dotIO.black = dotIO.lightValue;

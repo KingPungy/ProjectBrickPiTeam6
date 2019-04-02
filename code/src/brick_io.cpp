@@ -23,27 +23,7 @@ void IO::update() {
     distance = Ultrasonic4.cm;
 }
 
-
-int IO::calcSpeed(){
-    // foutwaarde is lightValue - average
-
-    //if (lightValue > black){black = lightValue; average = (white + black)/2}
-    //if (lightValue < white){white = lightValue; average = (white + black)/2} 
-
-/*
-    float margin = lightValue - average;
-    int percentageMarge;
-
-
-    if (margin > 0) { // te zwart
-        percentageMarge = (margin / (black - average) ) * 100.0;
-        //std::cout << "black: " << percentageMarge << std::endl;
-    } else { //te wit
-        percentageMarge = (margin / (average - white) ) * 100.0;
-        //std::cout << "white: " << percentageMarge << std::endl;
-    }
-    return percentageMarge;
-*/
+int IO::calcSpeed() {
     int maxspeed = 100;
     int speed = (int)mapf(lightValue, white, black, -maxspeed, maxspeed);
 
@@ -54,8 +34,7 @@ int IO::calcSpeed(){
     return speed;
 }
 
-float IO::mapf(float v, float min0, float max0, float min1, float max1)
-{
+float IO::mapf(float v, float min0, float max0, float min1, float max1) {
     return min1 + (max1 - min1) * ((v - min0) / (max0 - min0));
 }
 
@@ -65,20 +44,23 @@ void IO::resetEncoders() {
     BP.reset_motor_encoder(PORT_C);
 }
 
-void IO::dpsA(int speed) { // extra motor
+void IO::dpsA(int speed) {  // extra motor
     // speed is between -100% and 100%;
     if (speed > 100) speed = 100;
-    BP.set_motor_dps(PORT_A, (speed * MAX_SPEED)/100);
+    speedA = speed;
+    BP.set_motor_dps(PORT_A, (speed * MAX_SPEED) / 100);
 }
 
-void IO::dpsB(int speed) { // linker motor
+void IO::dpsB(int speed) {  // linker motor
     // speed is between 0% and 100%;
     if (speed > 100) speed = 100;
-    BP.set_motor_dps(PORT_B, ((speed * MAX_SPEED)/100));
+    speedB = speed;
+    BP.set_motor_dps(PORT_B, ((speed * MAX_SPEED) / 100));
 }
 
-void IO::dpsC(int speed) { // rechter motor
+void IO::dpsC(int speed) {  // rechter motor
     // speed is between 0% and 100%;
     if (speed > 100) speed = 100;
-    BP.set_motor_dps(PORT_C, ((speed * MAX_SPEED)/100));
+    speedC = speed;
+    BP.set_motor_dps(PORT_C, ((speed * MAX_SPEED) / 100));
 }
