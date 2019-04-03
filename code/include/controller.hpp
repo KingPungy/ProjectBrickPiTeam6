@@ -7,12 +7,10 @@
 #include <fstream>
 #include <iostream>
 
-
-struct js_event {
-    uint32_t time;
+struct input_event
+{
     int16_t value;
-    uint8_t type;
-    uint8_t number;
+    uint8_t id;
 };
 
 class classControl {
@@ -24,10 +22,12 @@ class classControl {
     int lJoyX, lJoyY, rJoyX, rJoyY;
     int rTrig, lTrig;
     int dLeftRight, dUpDown;
-    int fd;
-    struct js_event e;
+    //int fd;
+    //struct js_event e;
 
     classControl();
+
+    void process_input(const input_event* input);
 
     void update();
 

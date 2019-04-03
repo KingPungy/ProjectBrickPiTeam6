@@ -13,6 +13,8 @@ Ruben Zwietering
 #include "../include/controller.hpp"  // Controller input Class
    // hulp functies
 
+#include "../include/server.h"
+
 void exit_signal_handler(int signo);
 // classControl controller;
 IO dotIO;
@@ -68,6 +70,8 @@ int main(int argc, char* argv[]) {
     printf("manual mode: %s\n", manual ? "on" : "off");
 
     if (manual) {
+
+        server serv(DEFAULT_PORT);
         
         int speed = 50;
         int maxspeed = 100;
@@ -83,6 +87,9 @@ int main(int argc, char* argv[]) {
         {
             while(true) {
                 controller.update();
+                serv.wait_msg();
+                const message& msg = serv.get_msg();
+                controller.process_input(msg.data);
 
                 dotIO.dpsB(-controller.rTrig/2+controller.lTrig/2 + controller.lJoyX/4);
                 dotIO.dpsC(-controller.rTrig/2+controller.lTrig/2 - controller.lJoyX/4);

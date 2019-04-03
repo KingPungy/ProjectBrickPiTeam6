@@ -7,7 +7,7 @@
 
 int main(int argc, char** argv)
 {
-	int port = 7263;
+	int port = DEFAULT_PORT;
 	char* addr = 0;
 	
 	if (argc > 1)
@@ -54,15 +54,38 @@ int main(int argc, char** argv)
 	std::string ip_addr = std::string(addr);
 	client c(ip_addr, port);
 
-	char buf[1024];
+	union
+	{
+		uint8_t buf[4];
+		uint32_t time;
+		int16_t value;
+		uint8_t type;
+		uint8_t number;
+	} u_input;
+
+	union
+	{
+		uint8_t buf[3];
+		int16_t value;
+		uint8_t id;
+	} u_send_data;
 	
+	
+	int filed = open("/dev/input/js0", O_RDONLY);
+
 	for (;;)
 	{
-		usleep(1000 * 1000);
+		read(filed, u_input.buf, 4);
+		u_send_data.value = u_input.val;
+		u_send_data.id = u_input.number | (u_input.type << 4);
+		c.send_input((void*)u_send_data.buf);
+
+
+		//usleep(1000 * 1000);
 		//printf("< ip: %s:%d, msg: ", addr, port);
 		//scanf("%1024s", buf);
-		c.send_ping();
-		printf("send ping\n");
+		//c.send_ping();
+		//printf("send ping\n");
 		
 		//senderr = send_message_raw(sendmsg, sockfd, serv_addr);
 		//printf("send message with id = %#x\n", sendmsg.id);

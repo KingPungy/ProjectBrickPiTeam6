@@ -1,15 +1,16 @@
 #include "../include/controller.hpp"
 #include "../include/helpmath.hpp" 
 
-classControl::classControl() { fd = open("/dev/input/js0", O_RDONLY); }
+classControl::classControl()
+{ 
+    //fd = open("/dev/input/js0", O_RDONLY);
+}
 
-void classControl::update() {
-    read(fd, &e, sizeof(e));
-
-    int inputID = (e.number | e.type << 4);
-    inputID-=16;
+void classControl::process_input(const input_event* input)
+{
+    input_event e = *input;
     
-    switch (inputID)
+    switch (e.id-16)
     {   // Buttons
         case 0:
             a=e.value;
@@ -72,6 +73,12 @@ void classControl::update() {
             
     }
 
+
+}
+
+void classControl::update() {
+    read(fd, &e, sizeof(e));
+    process_input(&e);
    printInput();
 }
 
