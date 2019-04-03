@@ -86,10 +86,10 @@ int main(int argc, char* argv[]) {
         if (controllerFlag)
         {
             while(true) {
-                controller.update();
+                //controller.update();
                 serv.wait_msg();
                 const message& msg = serv.get_msg();
-                controller.process_input(msg.data);
+                controller.process_input((input_event*) msg.data);
 
                 dotIO.dpsB(-controller.rTrig/2+controller.lTrig/2 + controller.lJoyX/4);
                 dotIO.dpsC(-controller.rTrig/2+controller.lTrig/2 - controller.lJoyX/4);

@@ -7,7 +7,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
-int get_ipv4(in_addr* ina, const char* name = 0)
+int get_ipv4(in_addr* ina, const char* name)
 {
 	ifaddrs* ifa_ptr = 0;
 	
@@ -42,7 +42,7 @@ int get_ipv4(in_addr* ina, const char* name = 0)
 	return error;
 }
 
-int get_ipv4_str(in_addr* ina, char* ipv4, bool fill = true, const char* name = 0)
+int get_ipv4_str(in_addr* ina, char* ipv4, bool fill, const char* name)
 {
 	int err = 0;
 	
@@ -98,7 +98,7 @@ int get_ipv6(in6_addr* ina, const char* name)
 	return error;
 }
 
-int get_ipv6_str(in6_addr* ina, char* ipv6, bool fill = true, const char* name = 0)
+int get_ipv6_str(in6_addr* ina, char* ipv6, bool fill, const char* name)
 {
 	int err = 0;
 	
@@ -119,7 +119,7 @@ int get_ipv6_str(in6_addr* ina, char* ipv6, bool fill = true, const char* name =
 	return err;
 }
 
-int get_ip(void* sin, const char* name = 0) // sin is type of sockaddr_in or sockaddr_in6
+int get_ip(void* sin, const char* name) // sin is type of sockaddr_in or sockaddr_in6
 {
 	int err = 0;
 	if (!sin)
@@ -132,7 +132,7 @@ int get_ip(void* sin, const char* name = 0) // sin is type of sockaddr_in or soc
 	return err;
 }
 
-int get_ip_str(void* sin, char* ip, bool fill = true, const char* name = 0) // sin is type of sockaddr_in or sockaddr_in6
+int get_ip_str(void* sin, char* ip, bool fill, const char* name) // sin is type of sockaddr_in or sockaddr_in6
 {
 	int err = 0;
 	if (!sin)

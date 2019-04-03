@@ -77,8 +77,8 @@ void classControl::process_input(const input_event* input)
 }
 
 void classControl::update() {
-    read(fd, &e, sizeof(e));
-    process_input(&e);
+    //read(fd, &e, sizeof(e));
+    //process_input(&e);
    printInput();
 }
 
