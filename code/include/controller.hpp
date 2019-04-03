@@ -19,8 +19,10 @@ class classControl {
     bool a, b, x, y;
     bool lb, rb;
     bool home, back, start;
-    bool bjl, bjr;
-    int joyX, joyY;
+    bool lJb, rJb;
+    int lJoyX, lJoyY, rJoyX, rJoyY;
+    int rTrig, lTrig;
+    int dLeftRight, dUpDown;
     int fd;
     struct js_event e;
 

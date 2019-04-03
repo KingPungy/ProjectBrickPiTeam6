@@ -4,23 +4,74 @@ classControl::classControl() { fd = open("/dev/input/js0", O_RDONLY); }
 
 void classControl::update() {
     read(fd, &e, sizeof(e));
-    a = e.buttons % 2;
-    b = (e.buttons >> 1) % 2;
-    x = (e.buttons >> 2) % 2;
-    y = (e.buttons >> 3) % 2;
+    
 
-    lb = (e.buttons >> 4) % 2;
-    rb = (e.buttons >> 5) % 2;
+    /*
+        InputID-=16;
 
-    home = (e.buttons >> 8) % 2;
-    back = (e.buttons >> 6) % 2;
-    start = (e.buttons >> 7) % 2;
-
-    bjl = (e.buttons >> 9) % 2;
-    bjr = (e.buttons >> 10) % 2;
-
-    joyX = ((e.joyX - 128) / 127.0) * 100;
-    joyY = ((-1 * (e.joyY - 128)) / 127.0) * 100;
+    switch (InputID)
+    {   // Buttons
+        case 0:
+            a=e.value;
+            break;
+        case 1:
+            b=e.value;
+            break;
+        case 2:
+            x=e.value;
+            break;            
+        case 3:
+            y=e.value;
+            break;            
+        case 4:
+            lb=e.value;
+            break;            
+        case 5:
+            rb=e.value;
+            break;            
+        case 6:
+            back=e.value;
+            break;            
+        case 7:
+            start=e.value;
+            break;            
+        case 8:
+            home=e.value;
+            break;            
+        case 9:
+            lJb=e.value;
+            break;            
+        case 10:
+            rJb=e.value;
+            break;            
+        // Analog values
+        case 16:
+            lJoyX = e.value;
+            break;
+        case 17:
+            lJoyY = e.value;
+            break;
+        case 18:
+            rJoyX = e.value;
+            break;
+        case 19:
+            rJoyY = e.value;
+            break;
+        case 20:
+            rTrig = e.value;
+            break;
+        case 21:
+            lTrig = e.value;
+            break;
+        case 22:
+            dLeftRight = e.value;
+            break;
+        case 23:
+            dUpDown = e.value;
+            break;
+            
+    }
+    */
 }
 
 void classControl::printInput() {

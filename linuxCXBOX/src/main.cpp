@@ -17,7 +17,7 @@ int main() {
         
         controller.update();
         controller.printInput();
-        usleep(20*1000);
+        //usleep(20*1000);
     }
 }
 

@@ -11,42 +11,40 @@ void classControl::update() {
    /* 
     switch (e.type)
     {
+        
+        case 0:
+            a=e.value;
+            break;
         case 1:
-            switch (e.number)
-            {
-                case 0:
-                    a=e.value;
-                    break;
-                case 1:
-                    b=e.value;
-                    break;
-                case 2:
-                    x=e.value;
-                    break;            
-                case 3:
-                    y=e.value;
-                    break;            
-                case 4:
-                    lb=e.value;
-                    break;            
-                case 5:
-                    rb=e.value;
-                    break;            
-                case 6:
-                    back=e.value;
-                    break;            
-                case 7:
-                    start=e.value;
-                    break;            
-                case 8:
-                    home=e.value;
-                    break;            
-                case 9:
-                    lJb=e.value;
-                    break;            
-                case 10:
-                    rJb=e.value;
-                    break;            
+            b=e.value;
+            break;
+        case 2:
+            x=e.value;
+            break;            
+        case 3:
+            y=e.value;
+            break;            
+        case 4:
+            lb=e.value;
+            break;            
+        case 5:
+            rb=e.value;
+            break;            
+        case 6:
+            back=e.value;
+            break;            
+        case 7:
+            start=e.value;
+            break;            
+        case 8:
+            home=e.value;
+            break;            
+        case 9:
+            lJb=e.value;
+            break;            
+        case 10:
+            rJb=e.value;
+            break;            
             }
             break;
         case 2:
