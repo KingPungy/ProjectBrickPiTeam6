@@ -1,15 +1,15 @@
 #include "../include/controller.hpp"
+#include "../include/helpmath.hpp" 
 
 classControl::classControl() { fd = open("/dev/input/js0", O_RDONLY); }
 
 void classControl::update() {
     read(fd, &e, sizeof(e));
+
+    int inputID = (e.number | e.type << 4);
+    inputID-=16;
     
-
-    /*
-        InputID-=16;
-
-    switch (InputID)
+    switch (inputID)
     {   // Buttons
         case 0:
             a=e.value;
@@ -46,41 +46,42 @@ void classControl::update() {
             break;            
         // Analog values
         case 16:
-            lJoyX = e.value;
+            lJoyX = (int)map<float>(e.value,-32767,32767,-100,100);
             break;
         case 17:
-            lJoyY = e.value;
+            lJoyY = (int)map<float>(e.value-255,-32767-255,32767-255,100,-100);
             break;
         case 18:
-            rJoyX = e.value;
+            rJoyX = (int)map<float>(e.value,-32767,32767,-100,100);
             break;
         case 19:
-            rJoyY = e.value;
+            rJoyY = (int)map<float>(e.value-255,-32767-255,32767-255,100,-100);
             break;
         case 20:
-            rTrig = e.value;
+            rTrig = (int)map<float>(e.value+32767,0,2*32767,0,100);
             break;
         case 21:
-            lTrig = e.value;
+            lTrig = (int)map<float>(e.value+32767,0,2*32767,0,100);
             break;
         case 22:
-            dLeftRight = e.value;
+            dLeftRight = e.value % 32766;
             break;
         case 23:
-            dUpDown = e.value;
+            dUpDown = -1*(e.value % 32766);
             break;
             
     }
-    */
+
+   printInput();
 }
 
 void classControl::printInput() {
-    std::cout << "A: " << a << "\tB:" << b << "\tX: " << x << "\tY: " << y
-              << "\tLB: " << lb << "\tRB: " << rb << "\t(" << joyX << ", "
-              << joyY << ")"
-              << "\tHome: " << home << "\tBack: " << back
-              << "\tStart: " << start << " BjL: " << bjl << "\tBjR: " << bjr
-              << std::endl;
+    // std::cout << "A: " << a << "\tB:" << b << "\tX: " << x << "\tY: " << y
+    //           << "\tLB: " << lb << "\tRB: " << rb
+    //           << "\tHome: " << home << "\tBack: " << back
+    //           << "\tStart: " << start << " BjL: " << lJb << "\tBjR: " << rJb << std::endl;
+    printf("\e[2AA: %d B: %d X: %d Y: %d LB: %d RB: %d Back: %d Start: %d Home: %d LeftJoyButton: %d RightJoyButton: %d\n",a,b,x,y,lb,rb,back,start,home,lJb,rJb);
+    printf("LeftJoyX: %6d LeftJoyY: %6d RightJoyX: %6d RightJoyY: %6d lTrigger: %6d rTrigger: %6d dleftRight: %6d dUpDown: %6d\n",lJoyX,lJoyY,rJoyX,rJoyY,lTrig,rTrig,dLeftRight,dUpDown);
 }
 
 // int main() {

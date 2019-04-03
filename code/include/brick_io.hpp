@@ -42,7 +42,7 @@ class IO {
     void dpsB(int speed);
     void dpsC(int speed);
 
-    float mapf(float v, float min0, float max0, float min1, float max1);
+
 };
 
 #endif

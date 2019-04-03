@@ -7,11 +7,12 @@
 #include <fstream>
 #include <iostream>
 
+
 struct js_event {
-    uint32_t buttons;
-    int32_t joyX;
-    uint8_t joyY;
-    uint8_t uselessStuff;
+    uint32_t time;
+    int16_t value;
+    uint8_t type;
+    uint8_t number;
 };
 
 class classControl {

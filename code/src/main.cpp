@@ -11,10 +11,12 @@ Ruben Zwietering
 // Class headers
 #include "../include/brick_io.hpp"    // IO input Class
 #include "../include/controller.hpp"  // Controller input Class
+   // hulp functies
 
 void exit_signal_handler(int signo);
 // classControl controller;
 IO dotIO;
+classControl controller;
 
 char getch(int vmin = 1, int vtime = 0) {
     char buf = 0;
@@ -41,7 +43,10 @@ int main(int argc, char* argv[]) {
     int args = 1;
 
     bool manual = false;
+    bool controllerFlag = false;
     uint8_t check_speed = 0;
+
+    system("sudo xboxdrv --detach-kernel-driver --silent &");
 
     if (argc > 1)
         if (argv[1][0] == '-')
@@ -52,6 +57,9 @@ int main(int argc, char* argv[]) {
                     case 's':
                         check_speed = ++args;
                         break;
+                    case 'c':
+                        controllerFlag =true;
+                        break;
                 }
     if (check_speed && check_speed < argc)
         dotIO.MAX_SPEED = atoi(argv[check_speed]);
@@ -60,6 +68,7 @@ int main(int argc, char* argv[]) {
     printf("manual mode: %s\n", manual ? "on" : "off");
 
     if (manual) {
+        
         int speed = 50;
         int maxspeed = 100;
 
@@ -70,12 +79,21 @@ int main(int argc, char* argv[]) {
 
         int left = 0;
         int right = 0;
+        if (controllerFlag)
+        {
+            while(true) {
+                controller.update();
 
+                dotIO.dpsB(-controller.rTrig/2+controller.lTrig/2 + controller.lJoyX/4);
+                dotIO.dpsC(-controller.rTrig/2+controller.lTrig/2 - controller.lJoyX/4);
+            }
+        }
+        else
         while (true) {
             char buf = 0;
             switch (buf = getch(0)) {
-                case 'w':
-                case 'W':
+                case 's':
+                case 'S':
                     if (backward) {
                         forward = 0;
                         backward = 0;
@@ -84,8 +102,8 @@ int main(int argc, char* argv[]) {
                         backward = 0;
                     }
                     break;
-                case 's':
-                case 'S':
+                case 'w':
+                case 'W':
                     if (forward) {
                         forward = 0;
                         backward = 0;
@@ -94,8 +112,8 @@ int main(int argc, char* argv[]) {
                         backward = 1;
                     }
                     break;
-                case 'a':
-                case 'A':
+                case 'd':
+                case 'D':
                     if (turn_right) {
                         turn_left = 0;
                         turn_right = 0;
@@ -104,8 +122,8 @@ int main(int argc, char* argv[]) {
                         turn_right = 0;
                     }
                     break;
-                case 'd':
-                case 'D':
+                case 'a':
+                case 'A':
                     if (turn_left) {
                         turn_left = 0;
                         turn_right = 0;
@@ -169,12 +187,10 @@ int main(int argc, char* argv[]) {
             usleep(1 * 1000);
             dotIO.update();
 
-            int speed2 = dotIO.calcSpeed();
-
+            int speed2 = dotIO.calcSpeed();            
             int speed = speed2 / 2;
-
-            printf("\rdistance: %8d, brightness: %8d, speed: %16d",
-                   dotIO.distance, dotIO.lightValue, speed2);
+            //printf("\rdistance: %8d, brightness: %8d, speed: %16d",
+            //       dotIO.distance, dotIO.lightValue, speed2);
             if (!dotIO.touchSensor1) {
                 // printf("touch sensor 1: %d\n", dotIO.lightValue);
                 dotIO.black = dotIO.lightValue;

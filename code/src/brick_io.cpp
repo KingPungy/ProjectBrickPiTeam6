@@ -1,5 +1,6 @@
 
 #include "../include/brick_io.hpp"
+#include "../include/helpmath.hpp" 
 #include <unistd.h>  // for usleep
 #include <iostream>
 
@@ -25,7 +26,7 @@ void IO::update() {
 
 int IO::calcSpeed() {
     int maxspeed = 100;
-    int speed = (int)mapf(lightValue, white, black, -maxspeed, maxspeed);
+    int speed = (int)map<float>(lightValue, white, black, -maxspeed, maxspeed);
 
     if (speed < -maxspeed)
         speed = -maxspeed;
@@ -34,9 +35,8 @@ int IO::calcSpeed() {
     return speed;
 }
 
-float IO::mapf(float v, float min0, float max0, float min1, float max1) {
-    return min1 + (max1 - min1) * ((v - min0) / (max0 - min0));
-}
+
+
 
 void IO::resetEncoders() {
     BP.reset_motor_encoder(PORT_A);
