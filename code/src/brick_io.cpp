@@ -1,8 +1,8 @@
 
 #include "../include/brick_io.hpp"
-#include "../include/helpmath.hpp" 
 #include <unistd.h>  // for usleep
 #include <iostream>
+#include "../include/helpmath.hpp"
 
 IO::IO() {
     BP.detect();
@@ -11,6 +11,8 @@ IO::IO() {
     BP.set_sensor_type(PORT_2, SENSOR_TYPE_TOUCH);
     BP.set_sensor_type(PORT_3, SENSOR_TYPE_NXT_LIGHT_ON);
     BP.set_sensor_type(PORT_4, SENSOR_TYPE_NXT_ULTRASONIC);
+
+    resetEncoders();
 }
 
 void IO::update() {
@@ -34,9 +36,6 @@ int IO::calcSpeed() {
         speed = maxspeed;
     return speed;
 }
-
-
-
 
 void IO::resetEncoders() {
     BP.reset_motor_encoder(PORT_A);
@@ -63,4 +62,11 @@ void IO::dpsC(int speed) {  // rechter motor
     if (speed > 100) speed = 100;
     speedC = speed;
     BP.set_motor_dps(PORT_C, ((speed * MAX_SPEED) / 100));
+}
+
+void IO::steerPosition(int pos) {
+    if (pos > 100) pos = 100;
+    if (pos < -100) pos = -100;
+
+    BP.set_motor_position(PORT_A, pos);
 }
