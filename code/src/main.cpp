@@ -43,7 +43,12 @@ int main(int argc, char* argv[]) {
     signal(SIGINT, exit_signal_handler);  // register exit for Ctrl+C
 
     int args = 1;
-
+    /*
+    Different Flags:
+        Manual     : Use W,A,S,D to control the robot.
+        Controller : Use the Xbox Controller with triggers and left JoyStick.
+        Speed      : Set maximum speed value to increase or reduce control over the robot.
+    */
     bool manual = false;
     bool controllerFlag = false;
     uint8_t check_speed = 0;
@@ -72,35 +77,31 @@ int main(int argc, char* argv[]) {
     if (manual) {
         server serv(DEFAULT_PORT);
 
-        int speed = 50;
-        int maxspeed = 100;
-
-        bool forward = 0;
-        bool backward = 0;
-        bool turn_left = 0;
-        bool turn_right = 0;
-
-        int left = 0;
-        int right = 0;
         if (controllerFlag) {
             while (true) {
-                // controller.update();
-                serv.wait_msg();
-<<<<<<< HEAD
+                if (serv.has_message())
+                {
+                    const message msg = serv.get_message();
+                    controller.process_input((input_event*)msg.data);
+                }
 
-                message& msg = serv.get_msg();
-                controller.process_input((input_event*) msg.data);
-=======
-                const message& msg = serv.get_msg();
-                controller.process_input((input_event*)msg.data);
+                // Uses the mapped values of the triggers to determine the speed of the robot
+                dotIO.setForward(controller.lTrig - controller.rTrig);
 
-                dotIO.dpsB(-controller.rTrig);
-                dotIO.dpsC(-controller.rTrig);
->>>>>>> controller_over_wifi
-
+                // Sets the position of the motor for the front steeing wheel , Motor A
                 dotIO.steerPosition(controller.lJoyX);
             }
-        } else
+        } else {
+            int maxspeed = 100;
+
+            bool forward = 0;
+            bool backward = 0;
+            bool turn_left = 0;
+            bool turn_right = 0;
+
+            int left = 0;
+            int right = 0;
+
             while (true) {
                 char buf = 0;
                 switch (buf = getch(0)) {
@@ -146,54 +147,10 @@ int main(int argc, char* argv[]) {
                         break;
                 }
 
-                if (turn_left) {
-                    if (forward) {
-                        left = speed;
-                        right = maxspeed;
-                    } else if (backward) {
-                        left = -speed;
-                        right = -maxspeed;
-                    } else {
-                        left = 0;
-                        right = maxspeed;
-                    }
-                } else if (turn_right) {
-                    if (forward) {
-                        left = maxspeed;
-                        right = speed;
-                    } else if (backward) {
-                        left = -maxspeed;
-                        right = -speed;
-                    } else {
-                        left = maxspeed;
-                        right = 0;
-                    }
-                } else {
-                    if (forward) {
-                        left = maxspeed;
-                        right = maxspeed;
-                    } else if (backward) {
-                        left = -maxspeed;
-                        right = -maxspeed;
-                    } else {
-                        left = 0;
-                        right = 0;
-                    }
-                }
-
-                if (left > maxspeed)
-                    left = maxspeed;
-                else if (left < -maxspeed)
-                    left = -maxspeed;
-
-                if (right > maxspeed)
-                    right = maxspeed;
-                else if (right < -maxspeed)
-                    right = -maxspeed;
-
-                dotIO.dpsB(left);
-                dotIO.dpsC(right);
+                dotIO.setForward(forward * -maxspeed + backward * maxspeed);
+                dotIO.steerPosition(turn_left * -maxspeed + turn_right * maxspeed);
             }
+        }
     } else {
         while (true) {
             usleep(1 * 1000);
@@ -212,22 +169,20 @@ int main(int argc, char* argv[]) {
                 dotIO.white = dotIO.lightValue;
             }
             if (!dotIO.touchSensor1 || !dotIO.touchSensor2) {
-                dotIO.dpsB(0);
-                dotIO.dpsC(0);
+                dotIO.setForward(0);
                 dotIO.average = (dotIO.black + dotIO.white) / 2.0;
                 continue;
             }
 
             if (dotIO.distance < 6) {
-                dotIO.dpsB(0);
-                dotIO.dpsC(0);
-
+                dotIO.setForward(0);
                 continue;
             }
 
             int maxspeed = 50;
             int margin = 5;
 
+            // TODO
             if (speed < margin) {
                 speed -= maxspeed;
                 dotIO.dpsB(maxspeed * 2 - abs(speed));
@@ -242,15 +197,14 @@ int main(int argc, char* argv[]) {
             }
         }
     }
-    dotIO.dpsB(0);
-    dotIO.dpsC(0);
+    exit_signal_handler(0);
 }
 
 // Signal handler that will be called when Ctrl+C is pressed to stop the program
 void exit_signal_handler(int signo) {
     printf("signal: %d\n", signo);
-    dotIO.dpsA(0);
-    dotIO.dpsB(0);
-    dotIO.dpsC(0);  // Reset everything so there are no run-away motors
-    exit(-2);
+    dotIO.steerPosition(0);
+    dotIO.setForward(0);
+    // Reset everything so there are no run-away motors
+    exit(-signo);
 }

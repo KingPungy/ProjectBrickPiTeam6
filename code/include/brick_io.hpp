@@ -18,6 +18,8 @@ class IO {
     // variables for motor speed
     int speedA, speedB, speedC;
 
+    int maxSteering = 100;
+
     // Sensor write variables
     sensor_touch_t Touch1, Touch2;
     sensor_light_t Light3;
@@ -42,6 +44,7 @@ class IO {
     void dpsB(int speed);
     void dpsC(int speed);
 
+    void setForward(int speed);
     void steerPosition(int pos);
 };
 

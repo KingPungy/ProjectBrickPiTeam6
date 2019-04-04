@@ -1,6 +1,0 @@
-
-#include "../include/helpmath.hpp"
-
-
-
-
