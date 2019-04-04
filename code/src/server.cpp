@@ -42,7 +42,7 @@ bool server::has_message()
 
 	if (msg.bytes <= MESSAGE_HEADER_SIZE)
 		return false;
-	if (msg.bytes < MESSAGE_HEADER_SIZE + msg.msg.u.s.size)
+	if (msg.bytes < MESSAGE_HEADER_SIZE + msg.msg.s.size)
 		return false;
 	return true;
 }
@@ -63,8 +63,8 @@ const message server::get_message()
 void server::send_ping()
 {
 	s_message msg;
-	msg.msg.u.s.id = MESSAGE_ID_PING;
-	msg.msg.u.s.size = 0;
+	msg.msg.s.id = MESSAGE_ID_PING;
+	msg.msg.s.size = 0;
 	msg.msg.data = 0;
 
 	int err = send_message(msg.msg, m_sockfd, m_si_client);

@@ -27,7 +27,7 @@ struct message
 			time_t		time	= 0;	// 
 			uint16_t	size	= 0;	// 2 bytes, size of data
 		} s = { 0 };
-	} u = { 0 };
+	};
 	uint8_t*	data	= 0;	// maximum size of MESSAGE_SIZE_MAX
 };
 

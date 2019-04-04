@@ -14,9 +14,9 @@ int send_message(const message& msg, const int sockfd, const sockaddr_in& si)
 
 	int o;
 	for (o = 0; o < MESSAGE_HEADER_SIZE; o++)
-		buf[0] = msg.u.b[o];
+		buf[0] = msg.b[o];
 
-	memcpy(buf + o, msg.data, msg.u.s.size);
+	memcpy(buf + o, msg.data, msg.s.size);
 	int sbytes = sendto(sockfd, buf, MESSAGE_LEN_MAX, 0, (struct sockaddr*)&si, sizeof(si));
 	return sbytes;
 }
@@ -32,16 +32,16 @@ int recv_message(message& msg, const int sockfd, const sockaddr_in& si)
 
 	int o = 0;
 	for (o = 0; o < rbytes; o++)
-		msg.u.b[o] = buf[o];
+		msg.b[o] = buf[o];
 	
 	if (msg.data)
 		delete[] msg.data;
 
 	if (rbytes > MESSAGE_HEADER_SIZE)
 	{
-		msg.data = new uint8_t[msg.u.s.size];
+		msg.data = new uint8_t[msg.s.size];
 		
-		memcpy(msg.data, buf + o, msg.u.s.size);
+		memcpy(msg.data, buf + o, msg.s.size);
 	}
 	return rbytes;
 }

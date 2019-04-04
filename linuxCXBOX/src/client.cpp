@@ -41,7 +41,7 @@ void client::send_ping()
 	msg.size = 0;
 	msg.data = 0;
 
-	int err = send_message_raw(msg, m_sockfd, m_si_server);
+	int err = send_message(msg, m_sockfd, m_si_server);
 }
 
 void client::send_input(void* data)
@@ -51,5 +51,5 @@ void client::send_input(void* data)
 	msg.size = 3;
 	msg.data = (uint8_t*)data;
 
-	int err = send_message_raw(msg, m_sockfd, m_si_server);
+	int err = send_message(msg, m_sockfd, m_si_server);
 }
