@@ -24,7 +24,7 @@ public:
 	std::string& interface() { return m_interface; };
 	std::string get_ip();
 	std::string get_ip_client();
-	const message& get_msg();
+	message& get_msg();
 	void wait_msg();
 	void send_ping();
 	//int recv_wait();

@@ -18,7 +18,7 @@ int send_message_raw(const message& msg, const int sockfd, const sockaddr_in& si
 	} u_size;
 	union
 	{
-		uint8_t b[8];
+		uint8_t b[sizeof(time_t)];
 		time_t t;
 	} u_time;
 	int offset = 0;
@@ -29,9 +29,9 @@ int send_message_raw(const message& msg, const int sockfd, const sockaddr_in& si
 	offset += 2;
 	//msg.time = time(0);
 	u_time.t = time(0);
-	for (int i = 0; i < 8; i++)
+	for (int i = 0; i < sizeof(time_t); i++)
 		buf[i + offset] = u_size.b[i];
-	offset += 8;
+	offset += sizeof(time_t);
 	
 	memcpy(buf + offset, msg.data, msg.size);
 	sendto(sockfd, buf, MESSAGE_LEN_MAX, 0, (struct sockaddr*)&si_client, sizeof(si_client));
@@ -50,7 +50,7 @@ int recv_message_raw(message& msg, const int sockfd, const sockaddr_in& si_clien
 	} u_size;
 	union
 	{
-		uint8_t b[8];
+		uint8_t b[sizeof(time_t)];
 		time_t t;
 	} u_time;
 	int offset = 0;
@@ -59,9 +59,9 @@ int recv_message_raw(message& msg, const int sockfd, const sockaddr_in& si_clien
 		u_size.b[i] = buf[i + offset];
 	msg.size = u_size.i;
 	offset += 2;
-	for (int i = 0; i < 8; i++)
+	for (int i = 0; i < sizeof(time_t); i++)
 		u_size.b[i] = buf[i + offset];
-	offset += 8;
+	offset += sizeof(time_t);
 	msg.time = u_time.t;
 	memcpy(msg.data, buf + offset, msg.size);
 }

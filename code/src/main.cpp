@@ -48,7 +48,7 @@ int main(int argc, char* argv[]) {
     bool controllerFlag = false;
     uint8_t check_speed = 0;
 
-    system("sudo xboxdrv --detach-kernel-driver --silent &");
+    //system("sudo xboxdrv --detach-kernel-driver --silent &");
 
     if (argc > 1)
         if (argv[1][0] == '-')
@@ -88,7 +88,8 @@ int main(int argc, char* argv[]) {
             while(true) {
                 //controller.update();
                 serv.wait_msg();
-                const message& msg = serv.get_msg();
+
+                message& msg = serv.get_msg();
                 controller.process_input((input_event*) msg.data);
 
                 dotIO.dpsB(-controller.rTrig/2+controller.lTrig/2 + controller.lJoyX/4);

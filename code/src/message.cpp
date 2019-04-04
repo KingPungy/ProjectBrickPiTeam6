@@ -37,31 +37,50 @@ int send_message_raw(const message& msg, const int sockfd, const sockaddr_in& si
 	sendto(sockfd, buf, MESSAGE_LEN_MAX, 0, (struct sockaddr*)&si_client, sizeof(si_client));
 }
 
+#include <cstdio>
+
 int recv_message_raw(message& msg, const int sockfd, const sockaddr_in& si_client)
 {
 	uint8_t buf[MESSAGE_LEN_MAX];
 	memset(buf, 0, MESSAGE_LEN_MAX);
 	socklen_t addr_size = sizeof(si_client);
 	recvfrom(sockfd, buf, MESSAGE_LEN_MAX, 0, (struct sockaddr*)&si_client, &addr_size);
+
 	union
 	{
 		uint8_t b[2];
 		uint16_t i;
 	} u_size;
+	
 	union
 	{
-		uint8_t b[8];
+		uint8_t b[sizeof(time_t)];
 		time_t t;
 	} u_time;
+	
 	int offset = 0;
 	msg.id = buf[offset++];
+
 	for (int i = 0; i < 2; i++)
+	{
 		u_size.b[i] = buf[i + offset];
+	}
+
 	msg.size = u_size.i;
 	offset += 2;
-	for (int i = 0; i < 8; i++)
+
+	for (int i = 0; i < sizeof(time_t); i++)
+	{
 		u_size.b[i] = buf[i + offset];
-	offset += 8;
+	}
+
+	offset += sizeof(time_t);
 	msg.time = u_time.t;
+	//printf("msg id: %d, size: %d, data: %#x\n", msg.id, msg.size, (uint64_t)*msg.data);
+	
+	if (msg.data)
+		delete[] msg.data;
+
+	msg.data = new uint8_t[msg.size];
 	memcpy(msg.data, buf + offset, msg.size);
 }

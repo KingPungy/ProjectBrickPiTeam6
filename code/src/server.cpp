@@ -33,7 +33,7 @@ std::string server::get_ip_client()
 	return std::string(buf);
 }
 
-const message& server::get_msg()
+message& server::get_msg()
 {
 	return m_recvmsg;
 }
@@ -41,6 +41,7 @@ const message& server::get_msg()
 void server::wait_msg()
 {
 	recv_message_raw(m_recvmsg, m_sockfd, m_si_client);
+
 }
 
 void server::send_ping()
