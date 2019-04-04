@@ -2,6 +2,7 @@
 #include "../include/brick_io.hpp"
 #include <unistd.h>  // for usleep
 #include <iostream>
+#include <string>
 
 IO::IO() {
     BP.detect();
@@ -21,6 +22,9 @@ void IO::update() {
     lightValue = Light3.reflected;
     BP.get_sensor(PORT_4, Ultrasonic4);
     distance = Ultrasonic4.cm;
+
+    // transfer to file
+    logClass.write("sensor1: ", touchSensor1);
 }
 
 int IO::calcSpeed() {

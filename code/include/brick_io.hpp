@@ -2,6 +2,7 @@
 #define BRICK_IO_HPP
 
 #include "../include/BrickPi3.h"
+#include "../include/sensorlog.hpp"
 
 class IO {
    public:
@@ -29,6 +30,8 @@ class IO {
     int MAX_SPEED = 360;
 
     BrickPi3 BP;
+
+    slog logClass;
 
     IO();
 
