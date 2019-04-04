@@ -5,7 +5,7 @@ classControl::classControl() {
     // fd = open("/dev/input/js0", O_RDONLY);
 }
 
-void classControl::process_input(const input_event* input) {
+void classControl::process_input(input_event* input) {
     input_event e = *input;
 
     switch (e.id - 16) {  // Buttons with values ranging from 0 to 1 (Bool)

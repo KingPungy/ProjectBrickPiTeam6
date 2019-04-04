@@ -14,8 +14,8 @@ class server
 
 	struct s_message
 	{
-		message msg;
-		int bytes;
+		message msg = { 0 };
+		int bytes = 0;
 	};
 	
 	std::vector<s_message> m_msgq_recv;
@@ -33,7 +33,7 @@ public:
 	std::string get_ip();
 	std::string get_ip_client();
 	bool has_message();
-	const message get_message();						// gets the last message from the queue
+	message get_message();						// gets the last message from the queue
 	void send_ping();
 };
 

@@ -57,7 +57,7 @@ int main(int argc, char** argv)
 
 	union
 	{
-		uint8_t buf[4];
+		uint8_t buf[8];
 		uint32_t time;
 		int16_t value;
 		uint8_t type;
@@ -76,7 +76,7 @@ int main(int argc, char** argv)
 
 	for (;;)
 	{
-		read(filed, u_input.buf, 4);
+		read(filed, u_input.buf, 8);
 		u_send_data.value = u_input.value;
 		u_send_data.id = u_input.number | (u_input.type << 4);
 		c.send_input((void*)u_send_data.buf);

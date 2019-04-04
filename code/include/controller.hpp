@@ -27,7 +27,7 @@ class classControl {
 
     classControl();
 
-    void process_input(const input_event* input);
+    void process_input(input_event* input);
 
     void update();
 

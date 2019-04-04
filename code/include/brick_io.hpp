@@ -18,7 +18,7 @@ class IO {
     // variables for motor speed
     int speedA, speedB, speedC;
 
-    int maxSteering = 100;
+    int maxSteering = 75;
 
     // Sensor write variables
     sensor_touch_t Touch1, Touch2;

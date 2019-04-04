@@ -15,6 +15,12 @@ Ruben Zwietering
 
 #include "../include/server.h"
 
+#define DEBUG
+
+#ifdef DEBUG
+    #define DEBUGP(a...) printf(a)
+#endif
+
 void exit_signal_handler(int signo);
 // classControl controller;
 IO dotIO;
@@ -78,11 +84,30 @@ int main(int argc, char* argv[]) {
         server serv(DEFAULT_PORT);
 
         if (controllerFlag) {
-            while (true) {
+            while (true)
+            {
+                //usleep(1 * 1000);
+                //printf("test\n");
                 if (serv.has_message())
                 {
-                    const message msg = serv.get_message();
-                    controller.process_input((input_event*)msg.data);
+                    message msg = serv.get_message();
+                    switch (msg.s.id)
+                    {
+                        case MESSAGE_ID_INPUT:
+                            controller.process_input((input_event*)msg.data);
+                            if (controller.start)
+                            {
+                                controller.lTrig = 0;
+                                controller.rTrig = 0;
+                                
+                                controller.lJoyX = 0;
+                                controller.rJoyX = 0;
+                                controller.lJoyY = 0;
+                                controller.rJoyY = 0;
+                            }
+                            break;
+                    }
+                    //printf("msg id = %d, size = %d\n", msg.s.id, msg.s.size);
                 }
 
                 // Uses the mapped values of the triggers to determine the speed of the robot
@@ -98,9 +123,6 @@ int main(int argc, char* argv[]) {
             bool backward = 0;
             bool turn_left = 0;
             bool turn_right = 0;
-
-            int left = 0;
-            int right = 0;
 
             while (true) {
                 char buf = 0;

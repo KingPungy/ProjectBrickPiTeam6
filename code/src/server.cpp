@@ -8,7 +8,8 @@ server::server(int port)
 	m_si_server.sin_family = AF_INET;
 	m_si_server.sin_port = htons(port);
 	m_si_size = sizeof(m_si_server);
-	m_sockfd = socket(m_si_server.sin_family, SOCK_DGRAM | SOCK_NONBLOCK, 0);
+	//m_sockfd = socket(m_si_server.sin_family, SOCK_DGRAM | SOCK_NONBLOCK, 0);
+	m_sockfd = socket(m_si_server.sin_family, SOCK_DGRAM, 0);
 	bind(m_sockfd, (sockaddr*)&m_si_server, sizeof(m_si_server));
 	m_interface = std::string("wlan0");
 	m_msgq_recv = std::vector<s_message>();
@@ -36,8 +37,12 @@ std::string server::get_ip_client()
 
 bool server::has_message()
 {
-	s_message msg;
+	s_message msg = { 0 };
 	msg.bytes = recv_message(msg.msg, m_sockfd, m_si_client);
+    
+	if (msg.bytes <= 0)
+		return false;
+	
 	m_msgq_recv.push_back(msg);
 
 	if (msg.bytes <= MESSAGE_HEADER_SIZE)
@@ -47,13 +52,14 @@ bool server::has_message()
 	return true;
 }
 
-const message server::get_message()
+message server::get_message()
 {
+	//printf("m_msgq_recv.size() = %d\n", (int)m_msgq_recv.size());
 	if (m_msgq_recv.size() > 0)
 	{
-    	m_msgq_recv.front() = std::move(m_msgq_recv.back());
-    	s_message msg = m_msgq_recv.back();
-		m_msgq_recv.pop_back();
+    	s_message msg = m_msgq_recv[0];
+		m_msgq_recv.erase(m_msgq_recv.begin());
+        //printf("msg.msg id = %d, size = %d, bytes = %d\n", msg.msg.s.id, msg.msg.s.size, msg.bytes);
 		return msg.msg;
 	}
 
