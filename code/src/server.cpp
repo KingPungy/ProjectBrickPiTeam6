@@ -37,7 +37,10 @@ message& server::get_msg()
 {
 	return m_recvmsg;
 }
+}
 
+
+   z
 void server::wait_msg()
 {
 	recv_message_raw(m_recvmsg, m_sockfd, m_si_client);

@@ -42,7 +42,7 @@ class IO {
     void dpsB(int speed);
     void dpsC(int speed);
 
-
+    void steerPosition(int pos);
 };
 
 #endif
