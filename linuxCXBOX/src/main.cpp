@@ -44,7 +44,7 @@ int main(int argc, char** argv)
 			delete[] portstring;
 		}
 		
-		printf("IPv4(%d): %s\nPORT(%d): %d\n", addrsize, addr, portsize, port);
+		printf("IPv4[:port] = %s:%d\n", addr, port);
 	}
 	else
 	{
@@ -58,28 +58,46 @@ int main(int argc, char** argv)
 	union
 	{
 		uint8_t buf[8];
-		uint32_t time;
-		int16_t value;
-		uint8_t type;
-		uint8_t number;
-	} u_input;
+		struct
+		{
+			uint32_t time;
+			int16_t value;
+			uint8_t type;
+			uint8_t number;
+		} __attribute__((packed)) s;
+	} __attribute__((packed)) u_input;
 
 	union
 	{
 		uint8_t buf[3];
-		int16_t value;
-		uint8_t id;
-	} u_send_data;
+		struct
+		{
+			int16_t value;
+			uint8_t id;
+		} __attribute__((packed)) s;
+	} __attribute__((packed)) u_send_data;
 	
 	
 	int filed = open("/dev/input/js0", O_RDONLY);
 
-	for (;;)
+	for (int i = 0; ; i++)
 	{
-		read(filed, u_input.buf, 8);
-		u_send_data.value = u_input.value;
-		u_send_data.id = u_input.number | (u_input.type << 4);
-		c.send_input((void*)u_send_data.buf);
+		int rbytes = read(filed, u_input.buf, 8);
+		if (rbytes > 0)
+		{
+			u_send_data.s.value = u_input.s.value;
+			u_send_data.s.id = u_input.s.number | (u_input.s.type << 4);
+			c.send_input((void*)u_send_data.buf);
+			//printf("sending input... rbytes = %d (%d)\n", rbytes, i);
+			//for (int j = 0; j < 3; j++)
+			//	printf("%#x ", u_send_data.buf[j]);
+			//printf("\n");
+		}
+		else
+		{
+			//printf("\rrbytes = %d (%d)", rbytes, i);
+			//fflush(stdout);
+		}
 	}
 	
 	return 0;

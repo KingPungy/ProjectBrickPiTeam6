@@ -37,8 +37,8 @@ std::string client::get_ip_server()
 void client::send_ping()
 {
 	message msg;
-	msg.id = MESSAGE_ID_PING;
-	msg.size = 0;
+	msg.u.s.id = MESSAGE_ID_PING;
+	msg.u.s.size = 0;
 	msg.data = 0;
 
 	int err = send_message(msg, m_sockfd, m_si_server);
@@ -47,9 +47,10 @@ void client::send_ping()
 void client::send_input(void* data)
 {
 	message msg;
-	msg.id = MESSAGE_ID_INPUT;
-	msg.size = 3;
+	msg.u.s.id = MESSAGE_ID_INPUT;
+	//msg.u.s.time = time(0);
+	msg.u.s.size = 3;
 	msg.data = (uint8_t*)data;
-
+	
 	int err = send_message(msg, m_sockfd, m_si_server);
 }
