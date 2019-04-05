@@ -21,8 +21,9 @@ int main() {
 
     while (true) {
         dotIO.update();
-        std::cout << "\r" << dotIO.redValue << "\t" << dotIO.greenValue << "\t"
-                  << dotIO.blueValue << std::endl;
+        std::cout << "\r" << dotIO.speedA << "\t" << dotIO.speedB << "\t"
+                  << dotIO.speedC << dotIO.redValue << "\t" << dotIO.greenValue
+                  << "\t" << dotIO.blueValue << std::endl;
         usleep(50 * 1000);
     }
 
