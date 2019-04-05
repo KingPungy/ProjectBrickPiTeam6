@@ -67,9 +67,13 @@ void IO::dpsC(int speed) {  // motor
     BP.set_motor_dps(PORT_C, ((speed * MAX_SPEED) / 100));
 }
 
-void IO::setForward(int speed)
-{  
+void IO::setLeft(int speed)
+{
     dpsB(speed);
+}
+
+void IO::setRight(int speed)
+{
     dpsC(speed);
 }
 

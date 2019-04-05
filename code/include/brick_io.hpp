@@ -43,8 +43,9 @@ class IO {
     void dpsA(int speed);
     void dpsB(int speed);
     void dpsC(int speed);
+    void setLeft(int speed);
+    void setRight(int speed);
 
-    void setForward(int speed);
     void steerPosition(int pos);
 };
 
