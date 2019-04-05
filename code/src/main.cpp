@@ -22,8 +22,22 @@ int main() {
     while (true) {
         dotIO.update();
         std::cout << "\r" << dotIO.speedA << "\t" << dotIO.speedB << "\t"
-                  << dotIO.speedC << dotIO.redValue << "\t" << dotIO.greenValue
-                  << "\t" << dotIO.blueValue << std::endl;
+                  << dotIO.speedC << "\t" << dotIO.redValue << "\t"
+                  << dotIO.greenValue << "\t" << dotIO.blueValue << std::endl;
+        // 440 420 250
+        if ((dotIO.redValue > 420 and dotIO.redValue < 460) and
+            (dotIO.greenValue > 400 and dotIO.greenValue < 440) and
+            (dotIO.blueValue > 230 and dotIO.blueValue < 270)) {
+            std::cout << "Insitutieplein!" << std::endl;
+        } else if ((dotIO.redValue > 380 and dotIO.redValue < 420) and
+                   (dotIO.greenValue > 370 and dotIO.greenValue < 410) and
+                   (dotIO.blueValue > 280 and dotIO.blueValue < 320)) {
+            std::cout << "donkergrijs" << std::endl;
+        } else if ((dotIO.redValue > 430 and dotIO.redValue < 470) and
+                   (dotIO.greenValue > 420 and dotIO.greenValue < 460) and
+                   (dotIO.blueValue > 330 and dotIO.blueValue < 370)) {
+            std::cout << "lichtgrijs" << std::endl;
+        }
         usleep(50 * 1000);
     }
 

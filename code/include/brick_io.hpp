@@ -23,7 +23,7 @@ class IO {
     // Sensor write variables
     sensor_touch_t Touch1, Touch2;
 
-    sensor_color_t Color3;
+    sensor_color_t Color1;
 
     // sensor_light_t Light3;
     sensor_ultrasonic_t Ultrasonic4;
