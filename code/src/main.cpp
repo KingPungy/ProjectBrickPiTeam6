@@ -16,206 +16,31 @@ void exit_signal_handler(int signo);
 // classControl controller;
 IO dotIO;
 
-char getch(int vmin = 1, int vtime = 0) {
-    char buf = 0;
-    struct termios temp = {0};
-
-    tcgetattr(STDOUT_FILENO, &temp);
-
-    temp.c_lflag &= ~ICANON;
-    temp.c_cc[VMIN] = vmin;
-    temp.c_cc[VTIME] = vtime;
-
-    tcsetattr(STDOUT_FILENO, TCSANOW, &temp);
-
-    read(STDOUT_FILENO, &buf, 1);
-
-    tcsetattr(STDOUT_FILENO, TCSADRAIN, &temp);
-
-    return buf;
-}
-
-int main(int argc, char* argv[]) {
+int main() {
     signal(SIGINT, exit_signal_handler);  // register exit for Ctrl+C
 
-    int args = 1;
-
-    bool manual = false;
-    uint8_t check_speed = 0;
-
-    if (argc > 1)
-        if (argv[1][0] == '-')
-            for (int i = 1; i < strlen(argv[1]); i++) switch (argv[1][i]) {
-                    case 'm':
-                        manual = true;
-                        break;
-                    case 's':
-                        check_speed = ++args;
-                        break;
-                }
-    if (check_speed && check_speed < argc)
-        dotIO.MAX_SPEED = atoi(argv[check_speed]);
-
-    printf("max speed: %d\n", dotIO.MAX_SPEED);
-    printf("manual mode: %s\n", manual ? "on" : "off");
-
-    if (manual) {
-        int speed = 50;
-        int maxspeed = 100;
-
-        bool forward = 0;
-        bool backward = 0;
-        bool turn_left = 0;
-        bool turn_right = 0;
-
-        int left = 0;
-        int right = 0;
-
-        while (true) {
-            dotIO.update();
-            char buf = 0;
-            switch (buf = getch(0)) {
-                case 'w':
-                case 'W':
-                    if (backward) {
-                        forward = 0;
-                        backward = 0;
-                    } else {
-                        forward = 1;
-                        backward = 0;
-                    }
-                    break;
-                case 's':
-                case 'S':
-                    if (forward) {
-                        forward = 0;
-                        backward = 0;
-                    } else {
-                        forward = 0;
-                        backward = 1;
-                    }
-                    break;
-                case 'a':
-                case 'A':
-                    if (turn_right) {
-                        turn_left = 0;
-                        turn_right = 0;
-                    } else {
-                        turn_left = 1;
-                        turn_right = 0;
-                    }
-                    break;
-                case 'd':
-                case 'D':
-                    if (turn_left) {
-                        turn_left = 0;
-                        turn_right = 0;
-                    } else {
-                        turn_left = 0;
-                        turn_right = 1;
-                    }
-                    break;
-            }
-
-            if (turn_left) {
-                if (forward) {
-                    left = speed;
-                    right = maxspeed;
-                } else if (backward) {
-                    left = -speed;
-                    right = -maxspeed;
-                } else {
-                    left = 0;
-                    right = maxspeed;
-                }
-            } else if (turn_right) {
-                if (forward) {
-                    left = maxspeed;
-                    right = speed;
-                } else if (backward) {
-                    left = -maxspeed;
-                    right = -speed;
-                } else {
-                    left = maxspeed;
-                    right = 0;
-                }
-            } else {
-                if (forward) {
-                    left = maxspeed;
-                    right = maxspeed;
-                } else if (backward) {
-                    left = -maxspeed;
-                    right = -maxspeed;
-                } else {
-                    left = 0;
-                    right = 0;
-                }
-            }
-
-            if (left > maxspeed)
-                left = maxspeed;
-            else if (left < -maxspeed)
-                left = -maxspeed;
-
-            if (right > maxspeed)
-                right = maxspeed;
-            else if (right < -maxspeed)
-                right = -maxspeed;
-
-            dotIO.dpsB(left);
-            dotIO.dpsC(right);
-            usleep(5 * 1000);
+    while (true) {
+        dotIO.update();
+        std::cout << "\r" << dotIO.speedA << "\t" << dotIO.speedB << "\t"
+                  << dotIO.speedC << "\t" << dotIO.redValue << "\t"
+                  << dotIO.greenValue << "\t" << dotIO.blueValue << std::endl;
+        // 440 420 250
+        if ((dotIO.redValue > 420 and dotIO.redValue < 460) and
+            (dotIO.greenValue > 400 and dotIO.greenValue < 440) and
+            (dotIO.blueValue > 230 and dotIO.blueValue < 270)) {
+            std::cout << "Insitutieplein!" << std::endl;
+        } else if ((dotIO.redValue > 380 and dotIO.redValue < 420) and
+                   (dotIO.greenValue > 370 and dotIO.greenValue < 410) and
+                   (dotIO.blueValue > 280 and dotIO.blueValue < 320)) {
+            std::cout << "donkergrijs" << std::endl;
+        } else if ((dotIO.redValue > 430 and dotIO.redValue < 470) and
+                   (dotIO.greenValue > 420 and dotIO.greenValue < 460) and
+                   (dotIO.blueValue > 330 and dotIO.blueValue < 370)) {
+            std::cout << "lichtgrijs" << std::endl;
         }
-    } else {
-        while (true) {
-            usleep(1 * 1000);
-            dotIO.update();
-
-            int speed2 = dotIO.calcSpeed();
-
-            int speed = speed2 / 2;
-
-            // printf("\rdistance: %8d, brightness: %8d, speed: %16d",
-            //        dotIO.distance, dotIO.lightValue, speed2);
-            if (!dotIO.touchSensor1) {
-                // printf("touch sensor 1: %d\n", dotIO.lightValue);
-                dotIO.black = dotIO.lightValue;
-            }
-            if (!dotIO.touchSensor2) {
-                // printf("touch sensor 2: %d\n", dotIO.lightValue);
-                dotIO.white = dotIO.lightValue;
-            }
-            if (!dotIO.touchSensor1 || !dotIO.touchSensor2) {
-                dotIO.dpsB(0);
-                dotIO.dpsC(0);
-                dotIO.average = (dotIO.black + dotIO.white) / 2.0;
-                continue;
-            }
-
-            if (dotIO.distance < 6) {
-                dotIO.dpsB(0);
-                dotIO.dpsC(0);
-
-                continue;
-            }
-
-            int maxspeed = 50;
-            int margin = 5;
-
-            if (speed < margin) {
-                speed -= maxspeed;
-                dotIO.dpsB(maxspeed * 2 - abs(speed));
-                dotIO.dpsC(abs(speed));
-            } else if (speed > margin) {
-                speed += maxspeed;
-                dotIO.dpsB(speed);
-                dotIO.dpsC(maxspeed * 2 - speed);
-            } else {
-                dotIO.dpsB(maxspeed);
-                dotIO.dpsC(maxspeed);
-            }
-        }
+        usleep(50 * 1000);
     }
+
     dotIO.dpsB(0);
     dotIO.dpsC(0);
 }
