@@ -11,6 +11,7 @@ class IO {
     int white = 1300;
     float average = 1750;
     int lightValue;
+    int redValue, greenValue, blueValue;
     // Ultra-Sonic-Sensor Variables
     int distance;
     // Touch Sensors Varables
@@ -21,7 +22,7 @@ class IO {
 
     // Sensor write variables
     sensor_touch_t Touch1, Touch2;
-    sensor_light_t Light3;
+    sensor_color_t Color1;
     sensor_ultrasonic_t Ultrasonic4;
 
     // Motor Variables

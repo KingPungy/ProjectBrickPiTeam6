@@ -72,6 +72,7 @@ int main(int argc, char* argv[]) {
         int right = 0;
 
         while (true) {
+            dotIO.update();
             char buf = 0;
             switch (buf = getch(0)) {
                 case 'w':
@@ -163,6 +164,7 @@ int main(int argc, char* argv[]) {
 
             dotIO.dpsB(left);
             dotIO.dpsC(right);
+            usleep(5 * 1000);
         }
     } else {
         while (true) {
@@ -173,8 +175,8 @@ int main(int argc, char* argv[]) {
 
             int speed = speed2 / 2;
 
-            printf("\rdistance: %8d, brightness: %8d, speed: %16d",
-                   dotIO.distance, dotIO.lightValue, speed2);
+            // printf("\rdistance: %8d, brightness: %8d, speed: %16d",
+            //        dotIO.distance, dotIO.lightValue, speed2);
             if (!dotIO.touchSensor1) {
                 // printf("touch sensor 1: %d\n", dotIO.lightValue);
                 dotIO.black = dotIO.lightValue;

@@ -7,24 +7,21 @@
 IO::IO() {
     BP.detect();
 
-    BP.set_sensor_type(PORT_1, SENSOR_TYPE_TOUCH);
-    BP.set_sensor_type(PORT_2, SENSOR_TYPE_TOUCH);
-    BP.set_sensor_type(PORT_3, SENSOR_TYPE_NXT_LIGHT_ON);
-    BP.set_sensor_type(PORT_4, SENSOR_TYPE_NXT_ULTRASONIC);
+    // BP.set_sensor_type(PORT_1, SENSOR_TYPE_TOUCH);
+    // BP.set_sensor_type(PORT_2, SENSOR_TYPE_TOUCH);
+    // BP.set_sensor_type(PORT_3, SENSOR_TYPE_NXT_LIGHT_ON);
+    // BP.set_sensor_type(PORT_4, SENSOR_TYPE_NXT_ULTRASONIC);
+    BP.set_sensor_type(PORT_1, SENSOR_TYPE_NXT_COLOR_FULL);
 }
 
 void IO::update() {
-    BP.get_sensor(PORT_1, Touch1);
-    touchSensor1 = !(Touch1.pressed);
-    BP.get_sensor(PORT_2, Touch2);
-    touchSensor2 = !(Touch2.pressed);
-    BP.get_sensor(PORT_3, Light3);
-    lightValue = Light3.reflected;
-    BP.get_sensor(PORT_4, Ultrasonic4);
-    distance = Ultrasonic4.cm;
+    BP.get_sensor(PORT_1, Color1);
+    redValue = Color1.reflected_red;
+    greenValue = Color1.reflected_green;
+    blueValue = Color1.reflected_blue;
 
     // transfer to file
-    logClass.write("sensor1: ", touchSensor1);
+    logClass.write(redValue, greenValue, blueValue, speedA, speedB, speedC);
 }
 
 int IO::calcSpeed() {
