@@ -1,1 +1,1 @@
-sudo xboxdrv --detach-kernel-driver --silent
+sudo xboxdrv --detach-kernel-driver --silent &
