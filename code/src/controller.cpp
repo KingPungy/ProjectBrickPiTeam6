@@ -1,101 +1,139 @@
 #include "../include/controller.hpp"
+
 #include "../include/helpmath.hpp"
+#include <cstdio>
+#include <cstring>
+#include <climits>
 
 classControl::classControl() {
-    // fd = open("/dev/input/js0", O_RDONLY);
+    
 }
 
-void classControl::process_input(input_event* input) {
-    //printf("dereferencing\n");
-    //input_event e = *input;
-    //printf("dereferenced\n");
+void classControl::process_input_controller_btn_all(void* input) {
+    // copies all the input data to the input struct
+    memcpy(u_input_data.buf, input, INPUT_STRUCT_SIZE);
+}
 
-    //printf("id: %d, value: %d\n", input->id, input->value);
-
-    switch (input->id - 16) {  // Buttons with values ranging from 0 to 1 (Bool)
+void classControl::process_input_controller_btn_change(input_event* input) {
+    // evaluates input struct pointer and sets the correct variable in the input data struct
+    switch (input->id - 16) {
+        // Buttons with values ranging from 0 to 1 (Bool)
         // A,B,X,Y Buttons
-        case 0:
-            a = input->value;
-            break;
-        case 1:
-            b = input->value;
-            break;
-        case 2:
-            x = input->value;
-            break;
-        case 3:
-            y = input->value;
-            break;
+        case 0: u_input_data.s.A =      (bool)input->value; break;
+        case 1: u_input_data.s.B =      (bool)input->value; break;
+        case 2: u_input_data.s.X =      (bool)input->value; break;
+        case 3: u_input_data.s.Y =      (bool)input->value; break;
         // Buttons above the trigger
-        case 4:
-            lb = input->value;
-            break;
-        case 5:
-            rb = input->value;
-            break;
+        case 4: u_input_data.s.LB =     (bool)input->value; break;
+        case 5: u_input_data.s.RB =     (bool)input->value; break;
         // Buttons on the middle of the controller
-        case 6:
-            back = input->value;
-            break;
-        case 7:
-            start = input->value;
-            break;
-        case 8:
-            home = input->value;
-            break;
+        case 6: u_input_data.s.back =   (bool)input->value; break;
+        case 7: u_input_data.s.start =  (bool)input->value; break;
+        case 8: u_input_data.s.guide =  (bool)input->value; break;
         // Buttons of the joysticks
-        case 9:
-            lJb = input->value;
-            break;
-        case 10:
-            rJb = input->value;
-            break;
+        case 9: u_input_data.s.TL =     (bool)input->value; break;
+        case 10: u_input_data.s.TR =    (bool)input->value; break;
 
-        // Analog values     With maps to -100 to 100
+        // Analog values
         // Left Joystick
-        case 16:
-            lJoyX = (int)map<float>(input->value, -32767, 32767, -100, 100);
-            break;
-        case 17:
-            lJoyY = (int)map<float>(input->value - 255, -32767 - 255, 32767 - 255, 100, -100);
-            break;
+        case 16: u_input_data.s.X1 =    (int16_t)input->value; break;
+        case 17: u_input_data.s.Y1 =    (int16_t)input->value; break;
         // Right Joystick
-        case 18:
-            rJoyX = (int)map<float>(input->value, -32767, 32767, -100, 100);
-            break;
-        case 19:
-            rJoyY = (int)map<float>(input->value - 255, -32767 - 255, 32767 - 255, 100, -100);
-            break;
+        case 18: u_input_data.s.X2 =    (int16_t)input->value; break;
+        case 19: u_input_data.s.Y2 =    (int16_t)input->value; break;
         // Triggers
-        case 20:
-            rTrig = (int)map<float>(input->value + 32767, 0, 2 * 32767, 0, 100);
-            break;
-        case 21:
-            lTrig = (int)map<float>(input->value + 32767, 0, 2 * 32767, 0, 100);
-            break;
+        case 20: u_input_data.s.RT =    (uint8_t)input->value; break;
+        case 21: u_input_data.s.LT =    (uint8_t)input->value; break;
         // D Pad leftRight and UpDown
-        case 22: // dPad is considered a analog value but is has only 3 states. so we make it {-1, 0, 1}
-            dLeftRight = input->value % 32766;
+        case 22: // dPad is NOT considered analog
+            //dLeftRight = input->value % 32766;
+            // u_input_data.s.du
+            // u_input_data.s.dd
             break;
         case 23:
-            dUpDown = -1 * (input->value % 32766);
+            //dUpDown = -1 * (input->value % 32766);
+            // u_input_data.s.dl
+            // u_input_data.s.dr
             break;
     }
 }
 
-void classControl::update() {
-    // read(fd, &e, sizeof(e));
-    // process_input(&e);
-    printInput();
-}
-
-void classControl::printInput() { // Prints all button and axis valuues of the controller
+void classControl::printInput() { // Prints all button and axis values of the controller
     printf(
         "\e[2AA: %d B: %d X: %d Y: %d LB: %d RB: %d Back: %d Start: %d Home: "
         "%d LeftJoyButton: %d RightJoyButton: %d\n",
-        a, b, x, y, lb, rb, back, start, home, lJb, rJb);
+        a(), b(), x(), y(), lb(), rb(), back(), start(), home(), lJb(), rJb());
     printf(
-        "LeftJoyX: %6d LeftJoyY: %6d RightJoyX: %6d RightJoyY: %6d lTrigger: "
-        "%6d rTrigger: %6d dleftRight: %6d dUpDown: %6d\n",
-        lJoyX, lJoyY, rJoyX, rJoyY, lTrig, rTrig, dLeftRight, dUpDown);
+        "LeftJoyX: %6f LeftJoyY: %6f RightJoyX: %6f RightJoyY: %6f lTrigger: "
+        "%6f rTrigger: %6f dleft: %6d dRight: %6d dUp: %6d Down: %6d\n", 
+        lJoyX(), lJoyY(), rJoyX(), rJoyY(), lTrig(), rTrig(), dLeft(), dRight(), dUp(), dDown());
+}
+
+const bool classControl::a() const {
+    return u_input_data.s.A;
+}
+const bool classControl::b() const {
+    return u_input_data.s.B;
+}
+const bool classControl::x() const {
+    return u_input_data.s.X;
+}
+const bool classControl::y() const {
+    return u_input_data.s.Y;
+}
+const bool classControl::lb() const {
+    return u_input_data.s.LB;
+}
+const bool classControl::rb() const {
+    return u_input_data.s.RB;
+}
+const bool classControl::home() const {
+    return u_input_data.s.guide;
+}
+const bool classControl::back() const {
+    return u_input_data.s.back;
+}
+const bool classControl::start() const {
+    return u_input_data.s.start;
+}
+const bool classControl::lJb() const {
+    return u_input_data.s.TL;
+}
+const bool classControl::rJb() const {
+    return u_input_data.s.TR;
+}
+
+// map anologue joystick values from -100 to 100
+const float classControl::lJoyX() const {
+    return map<float>(u_input_data.s.X1, SHRT_MIN, SHRT_MAX, -100, 100);
+}
+const float classControl::lJoyY() const {
+    return map<float>(u_input_data.s.Y1, SHRT_MIN, SHRT_MAX, 100, -100);
+}
+const float classControl::rJoyX() const {
+    return map<float>(u_input_data.s.X2, SHRT_MIN, SHRT_MAX, -100, 100);
+}
+const float classControl::rJoyY() const {
+    return map<float>(u_input_data.s.Y2, SHRT_MIN, SHRT_MAX, 100, -100);
+}
+
+// map anologue trigger values from 0 to 100
+const float classControl::rTrig() const {
+    return map<float>(u_input_data.s.RT, 0, UCHAR_MAX, 0, 100);
+}
+const float classControl::lTrig() const {
+    return map<float>(u_input_data.s.LT, 0, UCHAR_MAX, 0, 100);
+}
+
+const bool classControl::dLeft() const {
+    return u_input_data.s.dl;
+}
+const bool classControl::dRight() const {
+    return u_input_data.s.dr;
+}
+const bool classControl::dUp() const {
+    return u_input_data.s.du;
+}
+const bool classControl::dDown() const {
+    return u_input_data.s.dd;
 }

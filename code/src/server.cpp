@@ -5,6 +5,7 @@
 
 server::server(int port)
 {
+	// setup all server side 
 	m_si_server.sin_family = AF_INET;
 	m_si_server.sin_port = htons(port);
 	m_si_size = sizeof(m_si_server);
@@ -33,30 +34,35 @@ std::string server::get_ip_client()
 	int err = get_ip_str(&m_si_client.sin_addr, buf, false, m_interface.c_str());
 	return std::string(buf);
 }
-
+#include <cstdio>
 bool server::has_message()
 {
 	s_message msg = { 0 };
 	msg.bytes = recv_message(msg.msg, m_sockfd, m_si_client);
-    
+	printf("msg.bytes = %d\n", msg.bytes);
+	for (int i = 0; i < msg.bytes; i++)
+		printf("%#4x ", msg.msg.b[i]);
+	printf("\n"); 
+	
 	if (msg.bytes <= 0)
 		return false;
-	// TODO: FIXME
 	if (msg.bytes < MESSAGE_HEADER_SIZE + msg.msg.s.size)
 		return false;
 	
+    //printf("adding to vector\n");
 	m_msgq_recv.push_back(msg);
+    //printf("added to vector\n");
 
-	if (msg.bytes <= MESSAGE_HEADER_SIZE)
-		return false;
-	if (msg.bytes < MESSAGE_HEADER_SIZE + msg.msg.s.size)
-		return false;
+	//if (msg.bytes <= MESSAGE_HEADER_SIZE)
+	//	return false;
+	//if (msg.bytes < MESSAGE_HEADER_SIZE + msg.msg.s.size)
+	//	return false;
 	return true;
 }
 
 message server::get_message()
 {
-	s_message msg= { 0 };
+	s_message msg = { 0 };
 	
 	if (m_msgq_recv.size() > 0)
 	{

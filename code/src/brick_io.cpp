@@ -8,15 +8,19 @@
 IO::IO() { // Initialize sensors
     BP.detect();
 
-    // BP.set_sensor_type(PORT_3, SENSOR_TYPE_NXT_LIGHT_ON);
     // BP.set_sensor_type(PORT_1, SENSOR_TYPE_TOUCH);
     // BP.set_sensor_type(PORT_2, SENSOR_TYPE_TOUCH);
-    // BP.set_sensor_type(PORT_4, SENSOR_TYPE_NXT_ULTRASONIC);
-    BP.set_sensor_type(PORT_1, SENSOR_TYPE_NXT_COLOR_FULL);
+    BP.set_sensor_type(PORT_1, SENSOR_TYPE_NXT_ULTRASONIC);
+    BP.set_sensor_type(PORT_2, SENSOR_TYPE_NXT_LIGHT_ON);
+    BP.set_sensor_type(PORT_4, SENSOR_TYPE_NXT_COLOR_FULL);
 }
 
 void IO::update() {
-    BP.get_sensor(PORT_1, Color1);
+    BP.get_sensor(PORT_1, Ultrasonic1);
+    BP.get_sensor(PORT_2, Light2);
+    lightValuej = Light2.reflected;
+
+    BP.get_sensor(PORT_4, Color1);
     redValue = Color1.reflected_red;
     greenValue = Color1.reflected_green;
     blueValue = Color1.reflected_blue;
@@ -37,17 +41,9 @@ int IO::calcSpeed() { // calculates speed based on black and white values
 }
 
 void IO::resetEncoders() { // set 0 positions to all motors
-    BP.reset_motor_encoder(PORT_A);
+    BP.reset_motor_encoder(PORT_D);
     BP.reset_motor_encoder(PORT_B);
     BP.reset_motor_encoder(PORT_C);
-}
-
-void IO::dpsA(int speed) {  // Front Steering motor
-    // speed is between -100% and 100%;
-    if (speed < -100) speed = -100;
-    if (speed > 100) speed = 100;
-    speedA = speed;
-    BP.set_motor_dps(PORT_A, (speed * MAX_SPEED) / 100);
 }
 
 void IO::dpsB(int speed) {  // motor
@@ -82,5 +78,5 @@ void IO::steerPosition(int pos) { // Maps the incoming values to the maximum and
 
     int spos = (int)map<float>(pos, -100, 100, -maxSteering, maxSteering);
 
-    BP.set_motor_position(PORT_A, spos);
+    BP.set_motor_position(PORT_D, spos);
 }

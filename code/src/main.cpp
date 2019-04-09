@@ -28,7 +28,26 @@ void exit_signal_handler(int signo);
 IO dotIO;
 classControl controller;
 
-int main() {
+char getch(int vmin = 1, int vtime = 0) {
+    char buf = 0;
+    struct termios temp = {0};
+
+    tcgetattr(STDOUT_FILENO, &temp);
+
+    temp.c_lflag &= ~ICANON;
+    temp.c_cc[VMIN] = vmin;
+    temp.c_cc[VTIME] = vtime;
+
+    tcsetattr(STDOUT_FILENO, TCSANOW, &temp);
+
+    read(STDOUT_FILENO, &buf, 1);
+
+    tcsetattr(STDOUT_FILENO, TCSADRAIN, &temp);
+
+    return buf;
+}
+
+int main(int argc, char* argv[]) {
     signal(SIGINT, exit_signal_handler);  // register exit for Ctrl+C
 
     int args = 1;
@@ -64,13 +83,14 @@ int main() {
 
     server serv(DEFAULT_PORT);
     if (controllerFlag) {
+        printf("started while true loop");
         while (true) {
             dotIO.update();
-            std::cout << "\r" << dotIO.speedA << "\t" << dotIO.speedB << "\t"
-                      << dotIO.speedC << "\t" << dotIO.redValue << "\t"
-                      << dotIO.greenValue << "\t" << dotIO.blueValue
-                      << std::endl;
-            // 440 420 250
+            //std::cout << "\r" << dotIO.speedA << "\t" << dotIO.speedB << "\t"
+            //          << dotIO.speedC << "\t" << dotIO.redValue << "\t"
+            //          << dotIO.greenValue << "\t" << dotIO.blueValue
+            //          << std::endl;
+            
             if ((dotIO.redValue > 420 and dotIO.redValue < 460) and
                 (dotIO.greenValue > 400 and dotIO.greenValue < 440) and
                 (dotIO.blueValue > 230 and dotIO.blueValue < 270)) {
@@ -86,47 +106,40 @@ int main() {
             }
 
             if (serv.has_message()) {
+                printf("got message: ");
                 message msg = serv.get_message();
-                printf("got message. id: %d, size: %d\n", msg.s.id, msg.s.size);
+                printf("id = %d, size = %d\n", msg.s.id, msg.s.size);
 
                 switch (msg.s.id) {
                     case MESSAGE_ID_INPUT_CONTROLLER_BTN_CHANGE:
-                        controller.process_input((input_event*)msg.data);
-
-                        if (controller.start) {
-                            controller.lTrig = 0;
-                            controller.rTrig = 0;
-
-                            controller.lJoyX = 0;
-                            controller.rJoyX = 0;
-                            controller.lJoyY = 0;
-                            controller.rJoyY = 0;
-                        }
-                        if (controller.dUpDown != 0) {
-                            dotIO.MAX_SPEED += controller.dUpDown * 100;
-                            if (dotIO.MAX_SPEED > 1000)
-                                dotIO.MAX_SPEED = 1000;
-                            else if (dotIO.MAX_SPEED < 100)
-                                dotIO.MAX_SPEED = 100;
-                        }
+                        controller.process_input_controller_btn_change((input_event*)msg.data);
                         break;
                     case MESSAGE_ID_INPUT_CONTROLLER_BTN_ALL:
+                        controller.process_input_controller_btn_all((void*)msg.data);
                         break;
                     default:
                         break;
                 }
             }
 
-            float lTrig = sqrt(controller.lTrig) * 10.0;
-            float rTrig = sqrt(controller.rTrig) * 10.0;
+            //controller.printInput();
 
+            // so the joystick is non-linear
+            float joyStick = sqrt(controller.lJoyX()) * 10.0;
+
+            float speed = controller.lTrig() - controller.rTrig();
+
+            // this is to slow down the rotation of the wheel that the car is turning to
             float lJoyXl = 1.0;
-            float wspeed = lTrig - rTrig;
-            if (controller.lJoyX > 0) lJoyXl -= controller.lJoyX / 1000.0;
+            if (joyStick > 0)
+                lJoyXl -= joyStick / 1000.0;
+
             float lJoyXr = 1.0;
-            if (controller.lJoyX < 0) lJoyXr -= controller.lJoyX / -1000.0;
-            float left = wspeed * lJoyXl;
-            float right = wspeed * lJoyXr;
+            if (joyStick < 0)
+                lJoyXr -= joyStick / -1000.0;
+
+            float left = speed * lJoyXl;
+            float right = speed * lJoyXr;
 
             // Uses the mapped values of the triggers to determine the speed of
             // the robot
@@ -135,7 +148,8 @@ int main() {
 
             // Sets the position of the motor for the front steeing wheel ,
             // Motor A
-            dotIO.steerPosition(controller.lJoyX);
+            
+            dotIO.steerPosition((int)joyStick);
         }
     } else {
         int speed = 50;
@@ -144,6 +158,7 @@ int main() {
         int turn = 0;
 
         while (true) {
+            dotIO.update();
             char buf = 0;
             switch (buf = getch(0)) {
                 case 's':
@@ -178,7 +193,7 @@ int main() {
 
             dotIO.setLeft(-forward);
             dotIO.setRight(-forward);
-            dotIO.steerPosition(turn);
+            dotIO.steerPosition(turn*2);
         }
     }
     exit_signal_handler(0);
@@ -191,5 +206,5 @@ void exit_signal_handler(int signo) {
     dotIO.steerPosition(0);
     dotIO.setLeft(0);
     dotIO.setRight(0);
-    exit(-signo);
+    exit(signo);
 }

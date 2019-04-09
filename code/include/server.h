@@ -12,12 +12,14 @@ class server
 	socklen_t m_si_size = 0;
 	int m_sockfd = 0;
 
+	// struct that encapsulates message struct plus the bytes that are correct
 	struct s_message
 	{
 		message msg = { 0 };
 		int bytes = 0;
 	};
 	
+	// messages receive and send buffers 
 	std::vector<s_message> m_msgq_recv;
 	std::vector<s_message> m_msgq_send;
 	int m_senderr = 0;
