@@ -82,8 +82,19 @@ int main() {
             } else if ((dotIO.redValue > 430 and dotIO.redValue < 470) and
                        (dotIO.greenValue > 420 and dotIO.greenValue < 460) and
                        (dotIO.blueValue > 330 and dotIO.blueValue < 370)) {
-                std::cout << "lichtgrijs" << std::endl;
-            }
+                std::cout << "lichtgrijs" << std::endl; 
+                //if sensor detects red
+            } else if ((dotIO.redValue > 430 and dotIO.redValue < 470) and
+                       (dotIO.greenValue > 420 and dotIO.greenValue < 460) and
+                       (dotIO.blueValue > 330 and dotIO.blueValue < 370)){
+                           std::cout << "Rode lijn stop nu!!!" << std::endl;
+                           BP.set_motor_dps(PORT_B, (-50));
+                           BP.set_motor_dps(PORT_C, (-50));
+                           BP.set_motor_dps(PORT_D, (0));
+                           usleep(1000 * 1000);
+                           BP.set_motor_dps(PORT_B, (0))
+                           BP.set_motor_dps(PORT_C, (0));
+                       }
 
             if (serv.has_message()) {
                 message msg = serv.get_message();

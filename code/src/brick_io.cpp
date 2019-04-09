@@ -37,17 +37,17 @@ int IO::calcSpeed() { // calculates speed based on black and white values
 }
 
 void IO::resetEncoders() { // set 0 positions to all motors
-    BP.reset_motor_encoder(PORT_A);
     BP.reset_motor_encoder(PORT_B);
     BP.reset_motor_encoder(PORT_C);
+    BP.reset_motor_encoder(PORT_D);
 }
 
-void IO::dpsA(int speed) {  // Front Steering motor
+void IO::dpsD(int speed) {  // Front Steering motor
     // speed is between -100% and 100%;
     if (speed < -100) speed = -100;
     if (speed > 100) speed = 100;
     speedA = speed;
-    BP.set_motor_dps(PORT_A, (speed * MAX_SPEED) / 100);
+    BP.set_motor_dps(PORT_D, (speed * MAX_SPEED) / 100);
 }
 
 void IO::dpsB(int speed) {  // motor
