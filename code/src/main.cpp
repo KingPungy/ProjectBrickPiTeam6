@@ -16,6 +16,7 @@ Ruben Zwietering
                                       // hulp functies
 
 #include "../include/server.h"
+#include "../include/helpmath.hpp"
 
 #define DEBUG
 
@@ -47,6 +48,11 @@ char getch(int vmin = 1, int vtime = 0) {
     return buf;
 }
 
+float lerp(float a, float b, float f) 
+{
+    return (a * (1.0 - f)) + (b * f);
+}
+
 int main(int argc, char* argv[]) {
     signal(SIGINT, exit_signal_handler);  // register exit for Ctrl+C
 
@@ -74,22 +80,20 @@ int main(int argc, char* argv[]) {
                         break;
                 }
 
-    dotIO.MAX_SPEED = atoi(argv[check_speed]);
     if (check_speed && check_speed < argc)
         dotIO.MAX_SPEED = atoi(argv[check_speed]);
 
     printf("controller mode: %s\n", controllerFlag ? "on" : "off");
     printf("max speed: %d\n", dotIO.MAX_SPEED);
 
-    float steerto = 0.0;
-    float steerto_old = 0.0;
-    float percentage = 0.0;
+    //float steerto = 0.0;
+    //float steerto_old = 0.0;
+    //float percentage = 0.0;
 
     server serv(DEFAULT_PORT);
     if (controllerFlag) {
-        printf("started while true loop");
         int value = -1;
-        int old_value = -1;
+        int old_value = value;
         while (true) {
             dotIO.update();
             //std::cout << "\r" << dotIO.speedA << "\t" << dotIO.speedB << "\t"
@@ -110,12 +114,8 @@ int main(int argc, char* argv[]) {
                        (dotIO.blueValue > 330 and dotIO.blueValue < 370)) {
                 value = 2;
             }
-            //else
-            //{
-                //value = -1;
-            //}
 
-            if (value != old_value)
+            if (false && value != old_value)
                 switch (value)
                 {
                     case -1: /*printf("Niet bekend.\n");*/ break;
@@ -150,23 +150,28 @@ int main(int argc, char* argv[]) {
 
 
             float joyStick = controller.lJoyX();//sqrt(fabs(lJoyX)) * lJoyX < 0 ? -10.0 : 10.0;
-
-            if (joyStick != steerto)
+            float steering = joyStick;
+            /*
+            if (fabs(joyStick - steerto) > 0.5)
             {
+                //percentage *= (joyStick + 100.0) / (steerto + 100.0);
+                //steerto_old = steerto;
                 percentage = 0.0;
                 steerto = joyStick;
             }
             
-            float steering = steerto_old + (steerto - steerto_old) * percentage;
+            float steering = percentage * steerto;// lerp(steerto, steerto, percentage); //map<float>(percentage, 0.0, 1.0, 0.0, steerto);
+            */
             float speed = controller.lTrig() - controller.rTrig();
+
+            //printf("joyStick = %.4f, steering = %.4f, percentage = %.4f\n", joyStick, steering, percentage);
 
             // this is to slow down the rotation of the wheel that the car is turning to
             float lJoyXl = 1.0;
+            float lJoyXr = 1.0;
             if (steering > 0)
                 lJoyXl -= steering / 1000.0;
-
-            float lJoyXr = 1.0;
-            if (steering < 0)
+            else if (steering < 0)
                 lJoyXr -= steering / 1000.0;
 
             float left = speed * lJoyXl;
@@ -181,10 +186,11 @@ int main(int argc, char* argv[]) {
             // Motor A
             
             dotIO.steerPosition((int)steering);
-
+            /*
             percentage += 0.01;
             if (percentage > 1.0)
-                precentage = 1.0;
+                percentage = 1.0;
+            */
         }
     } else {
         int speed = 50;
