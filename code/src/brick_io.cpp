@@ -18,7 +18,7 @@ IO::IO() { // Initialize sensors
 void IO::update() {
     BP.get_sensor(PORT_1, Ultrasonic1);
     BP.get_sensor(PORT_2, Light2);
-    lightValuej = Light2.reflected;
+    lightValue = Light2.reflected;
 
     BP.get_sensor(PORT_4, Color1);
     redValue = Color1.reflected_red;
@@ -70,6 +70,11 @@ void IO::setLeft(int speed)
 void IO::setRight(int speed)
 {
     dpsC(speed);
+}
+
+void IO::resetMotors()
+{
+    BP.reset_all();
 }
 
 void IO::steerPosition(int pos) { // Maps the incoming values to the maximum and minimum steering positions

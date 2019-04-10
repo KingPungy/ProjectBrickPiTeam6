@@ -79,10 +79,10 @@ int recv_message(message& msg, const int sockfd, const sockaddr_in& si)
 
 	//printf("end receiving 2\n");
 
-	printf("bbytes = %d\n", bbytes);
+	/*printf("bbytes = %d\n", bbytes);
 	for (int i = 0; i < bbytes; i++)
 		printf("%#4x ", bbuf[i]);
-	printf("\n"); 
+	printf("\n");*/
 
 	// something went wrong or there is no data
 	if (bbytes <= 0)
@@ -111,24 +111,24 @@ int recv_message(message& msg, const int sockfd, const sockaddr_in& si)
 	memcpy(msg.data, bbuf + MESSAGE_HEADER_SIZE, msg.s.size);
 
 	//printf("copyied bbuf + headersize to msg.data\n");
-	printf("msg.s.size = %d\n", msg.s.size);
+	/*printf("msg.s.size = %d\n", msg.s.size);
 	for (int i = 0; i < msg.s.size; i++)
-		printf("%#4x ", msg.b[i]);
-	printf("\n");
-	printf("bbytes = %d\n", bbytes);
+		printf("%#4x ", msg.data[i]);
+	printf("\n");*/
+	/*printf("bbytes = %d\n", bbytes);
 	for (int i = 0; i < bbytes; i++)
 		printf("%#4x ", bbuf[i]);
-	printf("\n"); 
+	printf("\n");*/
 	//printf("deleting bbuf\n");
 
 	// delete temporary body buffer
 	delete[] bbuf;
 
 	//printf("deleted bbuf\n");
-	printf("msg.s.size = %d\n", msg.s.size);
+	/*printf("msg.s.size = %d\n", msg.s.size);
 	for (int i = 0; i < msg.s.size; i++)
 		printf("%#4x ", msg.b[i]);
-	printf("\n"); 
+	printf("\n"); */
 	
 	//printf("id: %d, size: %d\n", msg.s.id, msg.s.size);
 

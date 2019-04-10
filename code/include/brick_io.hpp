@@ -51,6 +51,8 @@ class IO {
     void setLeft(int speed);
     void setRight(int speed);
 
+    void resetMotors();
+
     void steerPosition(int pos);
 };
 

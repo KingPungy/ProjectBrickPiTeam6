@@ -39,10 +39,10 @@ bool server::has_message()
 {
 	s_message msg = { 0 };
 	msg.bytes = recv_message(msg.msg, m_sockfd, m_si_client);
-	printf("msg.bytes = %d\n", msg.bytes);
+	/*printf("msg.bytes = %d\n", msg.bytes);
 	for (int i = 0; i < msg.bytes; i++)
 		printf("%#4x ", msg.msg.b[i]);
-	printf("\n"); 
+	printf("\n"); */
 	
 	if (msg.bytes <= 0)
 		return false;

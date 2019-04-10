@@ -81,9 +81,15 @@ int main(int argc, char* argv[]) {
     printf("controller mode: %s\n", controllerFlag ? "on" : "off");
     printf("max speed: %d\n", dotIO.MAX_SPEED);
 
+    float steerto = 0.0;
+    float steerto_old = 0.0;
+    float percentage = 0.0;
+
     server serv(DEFAULT_PORT);
     if (controllerFlag) {
         printf("started while true loop");
+        int value = -1;
+        int old_value = -1;
         while (true) {
             dotIO.update();
             //std::cout << "\r" << dotIO.speedA << "\t" << dotIO.speedB << "\t"
@@ -94,21 +100,36 @@ int main(int argc, char* argv[]) {
             if ((dotIO.redValue > 420 and dotIO.redValue < 460) and
                 (dotIO.greenValue > 400 and dotIO.greenValue < 440) and
                 (dotIO.blueValue > 230 and dotIO.blueValue < 270)) {
-                std::cout << "Insitutieplein!" << std::endl;
+                value = 0;
             } else if ((dotIO.redValue > 380 and dotIO.redValue < 420) and
                        (dotIO.greenValue > 370 and dotIO.greenValue < 410) and
                        (dotIO.blueValue > 280 and dotIO.blueValue < 320)) {
-                std::cout << "donkergrijs" << std::endl;
+                value = 1;
             } else if ((dotIO.redValue > 430 and dotIO.redValue < 470) and
                        (dotIO.greenValue > 420 and dotIO.greenValue < 460) and
                        (dotIO.blueValue > 330 and dotIO.blueValue < 370)) {
-                std::cout << "lichtgrijs" << std::endl;
+                value = 2;
             }
+            //else
+            //{
+                //value = -1;
+            //}
+
+            if (value != old_value)
+                switch (value)
+                {
+                    case -1: /*printf("Niet bekend.\n");*/ break;
+                    case 0: printf("Insitutieplein!\n"); break;
+                    case 1: printf("Donkergrijs\n"); break;
+                    case 2: printf("Lichtgrijs\n"); break;
+                }
+
+            old_value = value;
 
             if (serv.has_message()) {
-                printf("got message: ");
+                //printf("got message: ");
                 message msg = serv.get_message();
-                printf("id = %d, size = %d\n", msg.s.id, msg.s.size);
+                //printf("id = %d, size = %d\n", msg.s.id, msg.s.size);
 
                 switch (msg.s.id) {
                     case MESSAGE_ID_INPUT_CONTROLLER_BTN_CHANGE:
@@ -124,19 +145,29 @@ int main(int argc, char* argv[]) {
 
             //controller.printInput();
 
-            // so the joystick is non-linear
-            float joyStick = sqrt(controller.lJoyX()) * 10.0;
+            // // so the joystick is non-linear
 
+
+
+            float joyStick = controller.lJoyX();//sqrt(fabs(lJoyX)) * lJoyX < 0 ? -10.0 : 10.0;
+
+            if (joyStick != steerto)
+            {
+                percentage = 0.0;
+                steerto = joyStick;
+            }
+            
+            float steering = steerto_old + (steerto - steerto_old) * percentage;
             float speed = controller.lTrig() - controller.rTrig();
 
             // this is to slow down the rotation of the wheel that the car is turning to
             float lJoyXl = 1.0;
-            if (joyStick > 0)
-                lJoyXl -= joyStick / 1000.0;
+            if (steering > 0)
+                lJoyXl -= steering / 1000.0;
 
             float lJoyXr = 1.0;
-            if (joyStick < 0)
-                lJoyXr -= joyStick / -1000.0;
+            if (steering < 0)
+                lJoyXr -= steering / 1000.0;
 
             float left = speed * lJoyXl;
             float right = speed * lJoyXr;
@@ -149,7 +180,11 @@ int main(int argc, char* argv[]) {
             // Sets the position of the motor for the front steeing wheel ,
             // Motor A
             
-            dotIO.steerPosition((int)joyStick);
+            dotIO.steerPosition((int)steering);
+
+            percentage += 0.01;
+            if (percentage > 1.0)
+                precentage = 1.0;
         }
     } else {
         int speed = 50;
@@ -203,8 +238,6 @@ int main(int argc, char* argv[]) {
 void exit_signal_handler(int signo) {
     // printf("signal: %d\n", signo);
     // Reset everything so there are no run-away motors
-    dotIO.steerPosition(0);
-    dotIO.setLeft(0);
-    dotIO.setRight(0);
+    dotIO.resetMotors();
     exit(signo);
 }

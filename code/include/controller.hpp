@@ -3,6 +3,7 @@
 
 //#include <fcntl.h>
 #include <unistd.h>
+#include <cstdint>
 //#include <bitset>
 //#include <fstream>
 //#include <iostream>
@@ -29,27 +30,27 @@ class classControl {
             int16_t X2          = 0;
             int16_t Y2          = 0;
             // say to the bools they are 1 bit wide instead of 8 bits for packing purposes
-            bool du     : 1     = 0;
-            bool dd     : 1     = 0;
-            bool dl     : 1     = 0;
-            bool dr     : 1     = 0;
-            bool back   : 1     = 0;
-            bool guide  : 1     = 0;
-            bool start  : 1     = 0;
-            bool TL     : 1     = 0;
-            bool TR     : 1     = 0;
-            bool A      : 1     = 0;
-            bool B      : 1     = 0;
-            bool X      : 1     = 0;
-            bool Y      : 1     = 0;
-            bool LB     : 1     = 0;
-            bool RB     : 1     = 0;
+            bool du             : 1;
+            bool dd             : 1;
+            bool dl             : 1;
+            bool dr             : 1;
+            bool back           : 1;
+            bool guide          : 1;
+            bool start          : 1;
+            bool TL             : 1;
+            bool TR             : 1;
+            bool A              : 1;
+            bool B              : 1;
+            bool X              : 1;
+            bool Y              : 1;
+            bool LB             : 1;
+            bool RB             : 1;
             // put in this extra bit here so there is 16 instead of an akward 15
-            bool extra  : 1     = 0;
+            bool extra          : 1;
             uint8_t LT          = 0;
             uint8_t RT          = 0;
         //__attribute__((packed)) means the compiler won't add padding
-        } __attribute__((packed)) s;
+        } __attribute__((packed)) s = { 0 };
     } __attribute__((packed)) u_input_data;
 
 public:

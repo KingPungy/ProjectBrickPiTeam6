@@ -5,7 +5,8 @@
 #include <cstring>
 #include <climits>
 
-classControl::classControl() {
+classControl::classControl()
+{
     
 }
 
@@ -60,7 +61,7 @@ void classControl::process_input_controller_btn_change(input_event* input) {
 
 void classControl::printInput() { // Prints all button and axis values of the controller
     printf(
-        "\e[2AA: %d B: %d X: %d Y: %d LB: %d RB: %d Back: %d Start: %d Home: "
+        "A: %d B: %d X: %d Y: %d LB: %d RB: %d Back: %d Start: %d Home: "
         "%d LeftJoyButton: %d RightJoyButton: %d\n",
         a(), b(), x(), y(), lb(), rb(), back(), start(), home(), lJb(), rJb());
     printf(
@@ -108,13 +109,13 @@ const float classControl::lJoyX() const {
     return map<float>(u_input_data.s.X1, SHRT_MIN, SHRT_MAX, -100, 100);
 }
 const float classControl::lJoyY() const {
-    return map<float>(u_input_data.s.Y1, SHRT_MIN, SHRT_MAX, 100, -100);
+    return map<float>(u_input_data.s.Y1, SHRT_MIN, SHRT_MAX, -100, 100);
 }
 const float classControl::rJoyX() const {
     return map<float>(u_input_data.s.X2, SHRT_MIN, SHRT_MAX, -100, 100);
 }
 const float classControl::rJoyY() const {
-    return map<float>(u_input_data.s.Y2, SHRT_MIN, SHRT_MAX, 100, -100);
+    return map<float>(u_input_data.s.Y2, SHRT_MIN, SHRT_MAX, -100, 100);
 }
 
 // map anologue trigger values from 0 to 100
