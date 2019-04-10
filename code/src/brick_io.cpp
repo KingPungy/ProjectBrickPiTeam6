@@ -12,11 +12,11 @@ IO::IO() { // Initialize sensors
     // BP.set_sensor_type(PORT_1, SENSOR_TYPE_TOUCH);
     // BP.set_sensor_type(PORT_2, SENSOR_TYPE_TOUCH);
     // BP.set_sensor_type(PORT_4, SENSOR_TYPE_NXT_ULTRASONIC);
-    BP.set_sensor_type(PORT_1, SENSOR_TYPE_NXT_COLOR_FULL);
+    BP.set_sensor_type(PORT_4, SENSOR_TYPE_NXT_COLOR_FULL);
 }
 
 void IO::update() {
-    BP.get_sensor(PORT_1, Color1);
+    BP.get_sensor(PORT_4, Color1);
     redValue = Color1.reflected_red;
     greenValue = Color1.reflected_green;
     blueValue = Color1.reflected_blue;

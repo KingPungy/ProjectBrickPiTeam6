@@ -48,7 +48,7 @@ class IO {
 
     void resetEncoders();
 
-    void dpsA(int speed);
+    void dpsD(int speed);
     void dpsB(int speed);
     void dpsC(int speed);
     void setLeft(int speed);
