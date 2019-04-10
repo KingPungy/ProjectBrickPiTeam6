@@ -18,7 +18,7 @@ void omx(const int &soundIndex) {
             "/home/pi/BrickPiProject/code/sounds/treintoeter.mp3",
             "/home/pi/BrickPiProject/code/sounds/soviet-anthem.mp3"};
 
-        char *arguments[] = {"/usr/bin/omxplayer", "--vol", "-600",
+        char *arguments[] = {"/usr/bin/omxplayer", /*"--vol", "-200",*/
                              sound[soundIndex], NULL};
         execv("/usr/bin/omxplayer", arguments);
     }
@@ -26,7 +26,7 @@ void omx(const int &soundIndex) {
 
 int main() {
     while (true) {
-        omx(1);
+        omx(5);
 
         int exit_status;
         wait(&exit_status);
