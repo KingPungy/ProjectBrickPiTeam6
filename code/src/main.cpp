@@ -15,8 +15,12 @@ Ruben Zwietering
 #include "../include/controller.hpp"  // Controller input Class
                                       // hulp functies
 
-#include "../include/server.h"
 #include "../include/helpmath.hpp"
+#include "../include/server.h"
+
+#include <sys/wait.h>
+#include <unistd.h>
+#include <iostream>
 
 #define DEBUG
 
@@ -48,12 +52,26 @@ char getch(int vmin = 1, int vtime = 0) {
     return buf;
 }
 
-float lerp(float a, float b, float f) 
-{
-    return (a * (1.0 - f)) + (b * f);
+void omx(const int &soundIndex) {
+    int pid = fork();
+    if (pid == 0) {
+        char *sound[] = {
+            "/home/pi/BrickPiProject/code/sounds/thisdood.mp3",
+            "/home/pi/BrickPiProject/code/sounds/dejavu.mp3",
+            "/home/pi/BrickPiProject/code/sounds/gas.mp3",
+            "/home/pi/BrickPiProject/code/sounds/dawey.mp3",
+            "/home/pi/BrickPiProject/code/sounds/treintoeter.mp3",
+            "/home/pi/BrickPiProject/code/sounds/soviet-anthem.mp3"};
+
+        char *arguments[] = {"/usr/bin/omxplayer", /*"--vol", "-200",*/
+                             sound[soundIndex], NULL};
+        execv("/usr/bin/omxplayer", arguments);
+    }
 }
 
-int main(int argc, char* argv[]) {
+float lerp(float a, float b, float f) { return (a * (1.0 - f)) + (b * f); }
+
+int main(int argc, char *argv[]) {
     signal(SIGINT, exit_signal_handler);  // register exit for Ctrl+C
 
     int args = 1;
@@ -86,9 +104,9 @@ int main(int argc, char* argv[]) {
     printf("controller mode: %s\n", controllerFlag ? "on" : "off");
     printf("max speed: %d\n", dotIO.MAX_SPEED);
 
-    //float steerto = 0.0;
-    //float steerto_old = 0.0;
-    //float percentage = 0.0;
+    // float steerto = 0.0;
+    // float steerto_old = 0.0;
+    // float percentage = 0.0;
 
     server serv(DEFAULT_PORT);
     if (controllerFlag) {
@@ -96,11 +114,11 @@ int main(int argc, char* argv[]) {
         int old_value = value;
         while (true) {
             dotIO.update();
-            //std::cout << "\r" << dotIO.speedA << "\t" << dotIO.speedB << "\t"
+            // std::cout << "\r" << dotIO.speedA << "\t" << dotIO.speedB << "\t"
             //          << dotIO.speedC << "\t" << dotIO.redValue << "\t"
             //          << dotIO.greenValue << "\t" << dotIO.blueValue
             //          << std::endl;
-            
+
             if ((dotIO.redValue > 420 and dotIO.redValue < 460) and
                 (dotIO.greenValue > 400 and dotIO.greenValue < 440) and
                 (dotIO.blueValue > 230 and dotIO.blueValue < 270)) {
@@ -115,41 +133,48 @@ int main(int argc, char* argv[]) {
                 value = 2;
             }
 
-            if (false && value != old_value)
-                switch (value)
-                {
-                    case -1: /*printf("Niet bekend.\n");*/ break;
-                    case 0: printf("Insitutieplein!\n"); break;
-                    case 1: printf("Donkergrijs\n"); break;
-                    case 2: printf("Lichtgrijs\n"); break;
+            if (false && value != old_value) switch (value) {
+                    case -1: /*printf("Niet bekend.\n");*/
+                        break;
+                    case 0:
+                        printf("Insitutieplein!\n");
+                        break;
+                    case 1:
+                        printf("Donkergrijs\n");
+                        break;
+                    case 2:
+                        printf("Lichtgrijs\n");
+                        break;
                 }
 
             old_value = value;
 
             if (serv.has_message()) {
-                //printf("got message: ");
+                // printf("got message: ");
                 message msg = serv.get_message();
-                //printf("id = %d, size = %d\n", msg.s.id, msg.s.size);
+                // printf("id = %d, size = %d\n", msg.s.id, msg.s.size);
 
                 switch (msg.s.id) {
                     case MESSAGE_ID_INPUT_CONTROLLER_BTN_CHANGE:
-                        controller.process_input_controller_btn_change((input_event*)msg.data);
+                        controller.process_input_controller_btn_change(
+                            (input_event *)msg.data);
                         break;
                     case MESSAGE_ID_INPUT_CONTROLLER_BTN_ALL:
-                        controller.process_input_controller_btn_all((void*)msg.data);
+                        controller.process_input_controller_btn_all(
+                            (void *)msg.data);
                         break;
                     default:
                         break;
                 }
             }
 
-            //controller.printInput();
+            // controller.printInput();
 
             // // so the joystick is non-linear
 
-
-
-            float joyStick = controller.lJoyX();//sqrt(fabs(lJoyX)) * lJoyX < 0 ? -10.0 : 10.0;
+            float joyStick =
+                controller
+                    .lJoyX();  // sqrt(fabs(lJoyX)) * lJoyX < 0 ? -10.0 : 10.0;
             float steering = joyStick;
             /*
             if (fabs(joyStick - steerto) > 0.5)
@@ -159,14 +184,17 @@ int main(int argc, char* argv[]) {
                 percentage = 0.0;
                 steerto = joyStick;
             }
-            
-            float steering = percentage * steerto;// lerp(steerto, steerto, percentage); //map<float>(percentage, 0.0, 1.0, 0.0, steerto);
+
+            float steering = percentage * steerto;// lerp(steerto, steerto,
+            percentage); //map<float>(percentage, 0.0, 1.0, 0.0, steerto);
             */
             float speed = controller.lTrig() - controller.rTrig();
 
-            //printf("joyStick = %.4f, steering = %.4f, percentage = %.4f\n", joyStick, steering, percentage);
+            // printf("joyStick = %.4f, steering = %.4f, percentage = %.4f\n",
+            // joyStick, steering, percentage);
 
-            // this is to slow down the rotation of the wheel that the car is turning to
+            // this is to slow down the rotation of the wheel that the car is
+            // turning to
             float lJoyXl = 1.0;
             float lJoyXr = 1.0;
             if (steering > 0)
@@ -184,7 +212,7 @@ int main(int argc, char* argv[]) {
 
             // Sets the position of the motor for the front steeing wheel ,
             // Motor A
-            
+
             dotIO.steerPosition((int)steering);
             /*
             percentage += 0.01;
@@ -234,7 +262,7 @@ int main(int argc, char* argv[]) {
 
             dotIO.setLeft(-forward);
             dotIO.setRight(-forward);
-            dotIO.steerPosition(turn*2);
+            dotIO.steerPosition(turn * 2);
         }
     }
     exit_signal_handler(0);
