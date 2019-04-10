@@ -15,44 +15,45 @@ void classControl::process_input_controller_btn_all(void* input) {
     memcpy(u_input_data.buf, input, INPUT_STRUCT_SIZE);
 }
 
-void classControl::process_input_controller_btn_change(input_event* input) {
+void classControl::process_input_controller_btn_change(void* input) {
+    input_event* ie = (input_event*)input;
     // evaluates input struct pointer and sets the correct variable in the input data struct
-    switch (input->id - 16) {
+    switch (ie->id - 16) {
         // Buttons with values ranging from 0 to 1 (Bool)
         // A,B,X,Y Buttons
-        case 0: u_input_data.s.A =      (bool)input->value; break;
-        case 1: u_input_data.s.B =      (bool)input->value; break;
-        case 2: u_input_data.s.X =      (bool)input->value; break;
-        case 3: u_input_data.s.Y =      (bool)input->value; break;
+        case 0: u_input_data.s.A        = (bool)ie->value; break;
+        case 1: u_input_data.s.B        = (bool)ie->value; break;
+        case 2: u_input_data.s.X        = (bool)ie->value; break;
+        case 3: u_input_data.s.Y        = (bool)ie->value; break;
         // Buttons above the trigger
-        case 4: u_input_data.s.LB =     (bool)input->value; break;
-        case 5: u_input_data.s.RB =     (bool)input->value; break;
+        case 4: u_input_data.s.LB       = (bool)ie->value; break;
+        case 5: u_input_data.s.RB       = (bool)ie->value; break;
         // Buttons on the middle of the controller
-        case 6: u_input_data.s.back =   (bool)input->value; break;
-        case 7: u_input_data.s.start =  (bool)input->value; break;
-        case 8: u_input_data.s.guide =  (bool)input->value; break;
+        case 6: u_input_data.s.back     = (bool)ie->value; break;
+        case 7: u_input_data.s.start    = (bool)ie->value; break;
+        case 8: u_input_data.s.guide    = (bool)ie->value; break;
         // Buttons of the joysticks
-        case 9: u_input_data.s.TL =     (bool)input->value; break;
-        case 10: u_input_data.s.TR =    (bool)input->value; break;
+        case 9: u_input_data.s.TL       = (bool)ie->value; break;
+        case 10: u_input_data.s.TR      = (bool)ie->value; break;
 
         // Analog values
         // Left Joystick
-        case 16: u_input_data.s.X1 =    (int16_t)input->value; break;
-        case 17: u_input_data.s.Y1 =    (int16_t)input->value; break;
+        case 16: u_input_data.s.X1      = (int16_t)ie->value; break;
+        case 17: u_input_data.s.Y1      = (int16_t)ie->value; break;
         // Right Joystick
-        case 18: u_input_data.s.X2 =    (int16_t)input->value; break;
-        case 19: u_input_data.s.Y2 =    (int16_t)input->value; break;
+        case 18: u_input_data.s.X2      = (int16_t)ie->value; break;
+        case 19: u_input_data.s.Y2      = (int16_t)ie->value; break;
         // Triggers
-        case 20: u_input_data.s.RT =    (uint8_t)input->value; break;
-        case 21: u_input_data.s.LT =    (uint8_t)input->value; break;
+        case 20: u_input_data.s.RT      = (uint8_t)ie->value; break;
+        case 21: u_input_data.s.LT      = (uint8_t)ie->value; break;
         // D Pad leftRight and UpDown
         case 22: // dPad is NOT considered analog
-            //dLeftRight = input->value % 32766;
+            //dLeftRight = ie->value % 32766;
             // u_input_data.s.du
             // u_input_data.s.dd
             break;
         case 23:
-            //dUpDown = -1 * (input->value % 32766);
+            //dUpDown = -1 * (ie->value % 32766);
             // u_input_data.s.dl
             // u_input_data.s.dr
             break;

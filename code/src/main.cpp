@@ -32,6 +32,14 @@ void exit_signal_handler(int signo);
 // classControl controller;
 IO dotIO;
 classControl controller;
+const std::vector<std::string> sounds = {
+    "/home/pi/BrickPiProject/code/sounds/thisdood.mp3",
+    "/home/pi/BrickPiProject/code/sounds/dejavu.mp3",
+    "/home/pi/BrickPiProject/code/sounds/gas.mp3",
+    "/home/pi/BrickPiProject/code/sounds/dawey.mp3",
+    "/home/pi/BrickPiProject/code/sounds/treintoeter.mp3",
+    "/home/pi/BrickPiProject/code/sounds/soviet-anthem.mp3"
+};
 
 char getch(int vmin = 1, int vtime = 0) {
     char buf = 0;
@@ -52,21 +60,21 @@ char getch(int vmin = 1, int vtime = 0) {
     return buf;
 }
 
-void omx(const int &soundIndex) {
+int omx(const int &soundIndex) {
+    if (soundIndex < 0 || soundIndex >= sounds.size())
+        return -1;
     int pid = fork();
-    if (pid == 0) {
-        char *sound[] = {
-            "/home/pi/BrickPiProject/code/sounds/thisdood.mp3",
-            "/home/pi/BrickPiProject/code/sounds/dejavu.mp3",
-            "/home/pi/BrickPiProject/code/sounds/gas.mp3",
-            "/home/pi/BrickPiProject/code/sounds/dawey.mp3",
-            "/home/pi/BrickPiProject/code/sounds/treintoeter.mp3",
-            "/home/pi/BrickPiProject/code/sounds/soviet-anthem.mp3"};
-
-        char *arguments[] = {"/usr/bin/omxplayer", /*"--vol", "-200",*/
-                             sound[soundIndex], NULL};
-        execv("/usr/bin/omxplayer", arguments);
+    if (pid == 0)
+    {
+        return execl(
+            "/usr/bin/omxplayer",
+            "/usr/bin/omxplayer",
+            "--vol",
+            "-500",
+            sounds[soundIndex].c_str(),
+            (char*)0);
     }
+    return -pid;
 }
 
 float lerp(float a, float b, float f) { return (a * (1.0 - f)) + (b * f); }
@@ -109,9 +117,11 @@ int main(int argc, char *argv[]) {
     // float percentage = 0.0;
 
     server serv(DEFAULT_PORT);
+
     if (controllerFlag) {
         int value = -1;
         int old_value = value;
+
         while (true) {
             dotIO.update();
             // std::cout << "\r" << dotIO.speedA << "\t" << dotIO.speedB << "\t"
@@ -133,8 +143,10 @@ int main(int argc, char *argv[]) {
                 value = 2;
             }
 
-            if (false && value != old_value) switch (value) {
-                    case -1: /*printf("Niet bekend.\n");*/
+            if (false && value != old_value)
+            {
+                switch (value) {
+                    case -1: //printf("Niet bekend.\n");
                         break;
                     case 0:
                         printf("Insitutieplein!\n");
@@ -146,25 +158,40 @@ int main(int argc, char *argv[]) {
                         printf("Lichtgrijs\n");
                         break;
                 }
+            }
 
             old_value = value;
 
             if (serv.has_message()) {
-                // printf("got message: ");
+                //printf("got message: ");
                 message msg = serv.get_message();
-                // printf("id = %d, size = %d\n", msg.s.id, msg.s.size);
+                //printf("id = %d, size = %d\n", msg.s.id, msg.s.size);
 
                 switch (msg.s.id) {
                     case MESSAGE_ID_INPUT_CONTROLLER_BTN_CHANGE:
-                        controller.process_input_controller_btn_change(
-                            (input_event *)msg.data);
+                        controller.process_input_controller_btn_change((void*)msg.data);
                         break;
                     case MESSAGE_ID_INPUT_CONTROLLER_BTN_ALL:
-                        controller.process_input_controller_btn_all(
-                            (void *)msg.data);
+                        controller.process_input_controller_btn_all((void*)msg.data);
                         break;
                     default:
                         break;
+                }
+                
+            }
+
+            int exit_status;
+            int ret = waitpid(0, &exit_status, WNOHANG | WUNTRACED | WCONTINUED);
+            if (ret == -1 || ret == 0)
+            {
+                if(controller.a()) {
+                    omx(4); // treintoeter
+                } else if (controller.b()) {
+                    omx(3); // da wae
+                } else if (controller.x()){
+                    omx(1); // dejavu
+                } else if (controller.y()){
+                    omx(0); // this dood
                 }
             }
 
@@ -172,9 +199,7 @@ int main(int argc, char *argv[]) {
 
             // // so the joystick is non-linear
 
-            float joyStick =
-                controller
-                    .lJoyX();  // sqrt(fabs(lJoyX)) * lJoyX < 0 ? -10.0 : 10.0;
+            float joyStick = controller.lJoyX();  // sqrt(fabs(lJoyX)) * lJoyX < 0 ? -10.0 : 10.0;
             float steering = joyStick;
             /*
             if (fabs(joyStick - steerto) > 0.5)

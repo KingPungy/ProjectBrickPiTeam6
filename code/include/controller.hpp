@@ -57,7 +57,7 @@ public:
     classControl();
     // fills u_input_data with input
     void process_input_controller_btn_all(void* input);
-    void process_input_controller_btn_change(input_event* input);
+    void process_input_controller_btn_change(void* input);
 
     void printInput();
 
