@@ -14,7 +14,7 @@ class IO {
     int redValue, greenValue, blueValue;
 
     // Ultra-Sonic-Sensor Variables
-    int distance;
+    float distance;
     // Touch Sensors Varables
     bool touchSensor1, touchSensor2;
 
@@ -25,8 +25,8 @@ class IO {
 
     sensor_color_t Color1;
 
-    sensor_light_t Light2;
-    sensor_ultrasonic_t Ultrasonic1;
+    sensor_light_t Light3;
+    sensor_ultrasonic_t Ultrasonic4;
 
     // Motor Variables
     bool drive = true;
@@ -45,7 +45,7 @@ class IO {
 
     void resetEncoders();
 
-    void dpsA(int speed);
+    void dpsD(int speed);
     void dpsB(int speed);
     void dpsC(int speed);
     void setLeft(int speed);

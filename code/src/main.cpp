@@ -82,11 +82,12 @@ float lerp(float a, float b, float f) { return (a * (1.0 - f)) + (b * f); }
 
 int main(int argc, char *argv[]) {
     signal(SIGINT, exit_signal_handler);  // register exit for Ctrl+C
+    dotIO.dpsB(0);
+    dotIO.dpsC(0);
 
     int args = 1;
     /*
     Different Flags:
-        Manual     : Use W,A,S,D to control the robot.
         Controller : Use the Xbox Controller with triggers and left JoyStick.
         Speed      : Set maximum speed value to increase or reduce control over
     the robot.
@@ -130,20 +131,38 @@ int main(int argc, char *argv[]) {
             //          << dotIO.greenValue << "\t" << dotIO.blueValue
             //          << std::endl;
 
-            if ((dotIO.redValue > 420 and dotIO.redValue < 460) and
-                (dotIO.greenValue > 400 and dotIO.greenValue < 440) and
-                (dotIO.blueValue > 230 and dotIO.blueValue < 270)) {
-                value = 0;
-            } else if ((dotIO.redValue > 380 and dotIO.redValue < 420) and
-                       (dotIO.greenValue > 370 and dotIO.greenValue < 410) and
-                       (dotIO.blueValue > 280 and dotIO.blueValue < 320)) {
-                value = 1;
-            } else if ((dotIO.redValue > 430 and dotIO.redValue < 470) and
-                       (dotIO.greenValue > 420 and dotIO.greenValue < 460) and
-                       (dotIO.blueValue > 330 and dotIO.blueValue < 370)) {
-                value = 2;
-            }
-
+        if ((dotIO.redValue > 420 and dotIO.redValue < 460) and
+            (dotIO.greenValue > 400 and dotIO.greenValue < 440) and
+            (dotIO.blueValue > 230 and dotIO.blueValue < 270)) {
+            std::cout << "Insitutieplein!" << std::endl;
+            //if sensor detects dark grey
+        } else if ((dotIO.redValue > 380 and dotIO.redValue < 420) and
+                   (dotIO.greenValue > 370 and dotIO.greenValue < 410) and
+                   (dotIO.blueValue > 280 and dotIO.blueValue < 320)) {
+            std::cout << "Donkergrijs" << std::endl;
+            //if sensor detects light grey
+        } else if ((dotIO.redValue > 430 and dotIO.redValue < 470) and
+                   (dotIO.greenValue > 420 and dotIO.greenValue < 460) and
+                   (dotIO.blueValue > 330 and dotIO.blueValue < 370)) {
+            std::cout << "Lichtgrijs" << std::endl;
+            // if sensor detects orange
+        } else if ((dotIO.redValue > 570 and dotIO.redValue < 650) and
+                   (dotIO.greenValue > 320 and dotIO.greenValue < 400) and
+                   (dotIO.blueValue > 170 and dotIO.blueValue < 250)) {
+            std::cout << "Oranje stop nu!!!" << std::endl;
+            // dotIO.dpsB(60);
+            // dotIO.dpsC(60);
+            // usleep(1000 * 1000);
+            dotIO.dpsB(0);
+            dotIO.dpsC(0);
+        } else if (dotIO.lightValue > 2400 && dotIO.lightValue < 2800) {
+            //if sensor detects the shade of the stairs
+            std::cout << "trap!!" << std::endl;
+            // dotIO.dpsB(60);
+            // dotIO.dpsC(60);
+            // usleep(1000 * 1000);
+            dotIO.dpsB(0);
+            dotIO.dpsC(0);
             if (false && value != old_value)
             {
                 switch (value) {
@@ -247,11 +266,11 @@ int main(int argc, char *argv[]) {
                 percentage = 1.0;
             */
         }
-    } else {
-        int speed = 50;
 
-        int forward = 0;
-        int turn = 0;
+        std::cout << dotIO.speedA << "\t" << dotIO.speedB << "\t"
+                  << dotIO.speedC << "\t" << dotIO.redValue << "\t"
+                  << dotIO.greenValue << "\t" << dotIO.blueValue << "\t"
+                  << dotIO.distance << "\t" << dotIO.lightValue << std::endl;
 
         while (true) {
             dotIO.update();
@@ -292,7 +311,6 @@ int main(int argc, char *argv[]) {
             dotIO.steerPosition(turn * 2);
         }
     }
-    exit_signal_handler(0);
 }
 
 // Signal handler that will be called when Ctrl+C is pressed to stop the program

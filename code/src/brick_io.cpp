@@ -5,20 +5,23 @@
 #include <string>
 #include "../include/helpmath.hpp"
 
-IO::IO() { // Initialize sensors
+IO::IO() {  // Initialize sensors
     BP.detect();
 
+    BP.set_sensor_type(PORT_2, SENSOR_TYPE_NXT_LIGHT_ON);
     // BP.set_sensor_type(PORT_1, SENSOR_TYPE_TOUCH);
     // BP.set_sensor_type(PORT_2, SENSOR_TYPE_TOUCH);
     BP.set_sensor_type(PORT_1, SENSOR_TYPE_NXT_ULTRASONIC);
-    BP.set_sensor_type(PORT_2, SENSOR_TYPE_NXT_LIGHT_ON);
     BP.set_sensor_type(PORT_4, SENSOR_TYPE_NXT_COLOR_FULL);
 }
 
 void IO::update() {
-    BP.get_sensor(PORT_1, Ultrasonic1);
-    BP.get_sensor(PORT_2, Light2);
-    lightValue = Light2.reflected;
+    BP.get_sensor(PORT_2, Light3);
+    lightValue = Light3.reflected;
+
+    if (BP.get_sensor(PORT_1, Ultrasonic4) == 0) {
+        distance = Ultrasonic4.cm;
+    }
 
     BP.get_sensor(PORT_4, Color1);
     redValue = Color1.reflected_red;
@@ -26,10 +29,11 @@ void IO::update() {
     blueValue = Color1.reflected_blue;
 
     // transfer to file
-    logClass.write(redValue, greenValue, blueValue, speedA, speedB, speedC);
+    logClass.write(redValue, greenValue, blueValue, distance, lightValue,
+                   speedA, speedB, speedC);
 }
 
-int IO::calcSpeed() { // calculates speed based on black and white values
+int IO::calcSpeed() {  // calculates speed based on black and white values
     int maxspeed = 100;
     int speed = (int)map<float>(lightValue, white, black, -maxspeed, maxspeed);
 
@@ -41,9 +45,17 @@ int IO::calcSpeed() { // calculates speed based on black and white values
 }
 
 void IO::resetEncoders() { // set 0 positions to all motors
-    BP.reset_motor_encoder(PORT_D);
     BP.reset_motor_encoder(PORT_B);
     BP.reset_motor_encoder(PORT_C);
+    BP.reset_motor_encoder(PORT_D);
+}
+
+void IO::dpsD(int speed) {  // Front Steering motor
+    // speed is between -100% and 100%;
+    if (speed < -100) speed = -100;
+    if (speed > 100) speed = 100;
+    speedA = speed;
+    BP.set_motor_dps(PORT_D, (speed * MAX_SPEED) / 100);
 }
 
 void IO::dpsB(int speed) {  // motor
@@ -62,15 +74,9 @@ void IO::dpsC(int speed) {  // motor
     BP.set_motor_dps(PORT_C, ((speed * MAX_SPEED) / 100));
 }
 
-void IO::setLeft(int speed)
-{
-    dpsB(speed);
-}
+void IO::setLeft(int speed) { dpsB(speed); }
 
-void IO::setRight(int speed)
-{
-    dpsC(speed);
-}
+void IO::setRight(int speed) { dpsC(speed); }
 
 void IO::resetMotors()
 {
@@ -82,6 +88,6 @@ void IO::steerPosition(int pos) { // Maps the incoming values to the maximum and
     if (pos < -100) pos = -100;
 
     int spos = (int)map<float>(pos, -100, 100, -maxSteering, maxSteering);
-
+    speedA = spos;
     BP.set_motor_position(PORT_D, spos);
 }
