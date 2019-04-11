@@ -56,7 +56,7 @@ char getch(int vmin = 1, int vtime = 0) {
     read(STDOUT_FILENO, &buf, 1);
 
     tcsetattr(STDOUT_FILENO, TCSADRAIN, &temp);
-
+    
     return buf;
 }
 
@@ -66,6 +66,7 @@ int omx(const int &soundIndex) {
     int pid = fork();
     if (pid == 0)
     {
+        // FIXME
         return execl(
             "/usr/bin/omxplayer",
             "/usr/bin/omxplayer",
@@ -182,6 +183,7 @@ int main(int argc, char *argv[]) {
 
             int exit_status;
             int ret = waitpid(0, &exit_status, WNOHANG | WUNTRACED | WCONTINUED);
+            // FIXME
             if (ret == -1 || ret == 0)
             {
                 if(controller.a()) {
