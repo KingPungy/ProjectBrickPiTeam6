@@ -38,8 +38,7 @@ const std::vector<std::string> sounds = {
     "/home/pi/BrickPiProject/code/sounds/gas.mp3",
     "/home/pi/BrickPiProject/code/sounds/dawey.mp3",
     "/home/pi/BrickPiProject/code/sounds/treintoeter.mp3",
-    "/home/pi/BrickPiProject/code/sounds/soviet-anthem.mp3"
-};
+    "/home/pi/BrickPiProject/code/sounds/soviet-anthem.mp3"};
 
 char getch(int vmin = 1, int vtime = 0) {
     char buf = 0;
@@ -56,24 +55,17 @@ char getch(int vmin = 1, int vtime = 0) {
     read(STDOUT_FILENO, &buf, 1);
 
     tcsetattr(STDOUT_FILENO, TCSADRAIN, &temp);
-    
+
     return buf;
 }
 
 int omx(const int &soundIndex) {
-    if (soundIndex < 0 || soundIndex >= sounds.size())
-        return -1;
+    if (soundIndex < 0 || soundIndex >= sounds.size()) return -1;
     int pid = fork();
-    if (pid == 0)
-    {
+    if (pid == 0) {
         // FIXME
-        return execl(
-            "/usr/bin/omxplayer",
-            "/usr/bin/omxplayer",
-            "--vol",
-            "-500",
-            sounds[soundIndex].c_str(),
-            (char*)0);
+        return execl("/usr/bin/omxplayer", "/usr/bin/omxplayer", "--vol",
+                     "-500", sounds[soundIndex].c_str(), (char *)0);
     }
     return -pid;
 }
@@ -131,42 +123,42 @@ int main(int argc, char *argv[]) {
             //          << dotIO.greenValue << "\t" << dotIO.blueValue
             //          << std::endl;
 
-        if ((dotIO.redValue > 420 and dotIO.redValue < 460) and
-            (dotIO.greenValue > 400 and dotIO.greenValue < 440) and
-            (dotIO.blueValue > 230 and dotIO.blueValue < 270)) {
-            std::cout << "Insitutieplein!" << std::endl;
-            //if sensor detects dark grey
-        } else if ((dotIO.redValue > 380 and dotIO.redValue < 420) and
-                   (dotIO.greenValue > 370 and dotIO.greenValue < 410) and
-                   (dotIO.blueValue > 280 and dotIO.blueValue < 320)) {
-            std::cout << "Donkergrijs" << std::endl;
-            //if sensor detects light grey
-        } else if ((dotIO.redValue > 430 and dotIO.redValue < 470) and
-                   (dotIO.greenValue > 420 and dotIO.greenValue < 460) and
-                   (dotIO.blueValue > 330 and dotIO.blueValue < 370)) {
-            std::cout << "Lichtgrijs" << std::endl;
-            // if sensor detects orange
-        } else if ((dotIO.redValue > 570 and dotIO.redValue < 650) and
-                   (dotIO.greenValue > 320 and dotIO.greenValue < 400) and
-                   (dotIO.blueValue > 170 and dotIO.blueValue < 250)) {
-            std::cout << "Oranje stop nu!!!" << std::endl;
-            // dotIO.dpsB(60);
-            // dotIO.dpsC(60);
-            // usleep(1000 * 1000);
-            dotIO.dpsB(0);
-            dotIO.dpsC(0);
-        } else if (dotIO.lightValue > 2400 && dotIO.lightValue < 2800) {
-            //if sensor detects the shade of the stairs
-            std::cout << "trap!!" << std::endl;
-            // dotIO.dpsB(60);
-            // dotIO.dpsC(60);
-            // usleep(1000 * 1000);
-            dotIO.dpsB(0);
-            dotIO.dpsC(0);
-            if (false && value != old_value)
-            {
+            if ((dotIO.redValue > 420 and dotIO.redValue < 460) and
+                (dotIO.greenValue > 400 and dotIO.greenValue < 440) and
+                (dotIO.blueValue > 230 and dotIO.blueValue < 270)) {
+                std::cout << "Insitutieplein!" << std::endl;
+                // if sensor detects dark grey
+            } else if ((dotIO.redValue > 380 and dotIO.redValue < 420) and
+                       (dotIO.greenValue > 370 and dotIO.greenValue < 410) and
+                       (dotIO.blueValue > 280 and dotIO.blueValue < 320)) {
+                std::cout << "Donkergrijs" << std::endl;
+                // if sensor detects light grey
+            } else if ((dotIO.redValue > 430 and dotIO.redValue < 470) and
+                       (dotIO.greenValue > 420 and dotIO.greenValue < 460) and
+                       (dotIO.blueValue > 330 and dotIO.blueValue < 370)) {
+                std::cout << "Lichtgrijs" << std::endl;
+                // if sensor detects orange
+            } else if ((dotIO.redValue > 570 and dotIO.redValue < 650) and
+                       (dotIO.greenValue > 320 and dotIO.greenValue < 400) and
+                       (dotIO.blueValue > 170 and dotIO.blueValue < 250)) {
+                std::cout << "Oranje stop nu!!!" << std::endl;
+                dotIO.dpsB(60);
+                dotIO.dpsC(60);
+                usleep(1000 * 1000);
+                dotIO.dpsB(0);
+                dotIO.dpsC(0);
+            } else if (dotIO.lightValue > 2400 && dotIO.lightValue < 2800) {
+                // if sensor detects the shade of the stairs
+                std::cout << "trap!!" << std::endl;
+                dotIO.dpsB(60);
+                dotIO.dpsC(60);
+                usleep(1000 * 1000);
+                dotIO.dpsB(0);
+                dotIO.dpsC(0);
+            }
+            if (false && value != old_value) {
                 switch (value) {
-                    case -1: //printf("Niet bekend.\n");
+                    case -1:  // printf("Niet bekend.\n");
                         break;
                     case 0:
                         printf("Insitutieplein!\n");
@@ -183,36 +175,37 @@ int main(int argc, char *argv[]) {
             old_value = value;
 
             if (serv.has_message()) {
-                //printf("got message: ");
+                // printf("got message: ");
                 message msg = serv.get_message();
-                //printf("id = %d, size = %d\n", msg.s.id, msg.s.size);
+                // printf("id = %d, size = %d\n", msg.s.id, msg.s.size);
 
                 switch (msg.s.id) {
                     case MESSAGE_ID_INPUT_CONTROLLER_BTN_CHANGE:
-                        controller.process_input_controller_btn_change((void*)msg.data);
+                        controller.process_input_controller_btn_change(
+                            (void *)msg.data);
                         break;
                     case MESSAGE_ID_INPUT_CONTROLLER_BTN_ALL:
-                        controller.process_input_controller_btn_all((void*)msg.data);
+                        controller.process_input_controller_btn_all(
+                            (void *)msg.data);
                         break;
                     default:
                         break;
                 }
-                
             }
 
             int exit_status;
-            int ret = waitpid(0, &exit_status, WNOHANG | WUNTRACED | WCONTINUED);
+            int ret =
+                waitpid(0, &exit_status, WNOHANG | WUNTRACED | WCONTINUED);
             // FIXME
-            if (ret == -1 || ret == 0)
-            {
-                if(controller.a()) {
-                    omx(4); // treintoeter
+            if (ret == -1 || ret == 0) {
+                if (controller.a()) {
+                    omx(4);  // treintoeter
                 } else if (controller.b()) {
-                    omx(3); // da wae
-                } else if (controller.x()){
-                    omx(1); // dejavu
-                } else if (controller.y()){
-                    omx(0); // this dood
+                    omx(3);  // da wae
+                } else if (controller.x()) {
+                    omx(1);  // dejavu
+                } else if (controller.y()) {
+                    omx(0);  // this dood
                 }
             }
 
@@ -220,7 +213,8 @@ int main(int argc, char *argv[]) {
 
             // // so the joystick is non-linear
 
-            float joyStick = controller.lJoyX();  // sqrt(fabs(lJoyX)) * lJoyX < 0 ? -10.0 : 10.0;
+            float joyStick = controller.lJoyX();  // sqrt(fabs(lJoyX)) * lJoyX <
+                                                  // 0 ? -10.0 : 10.0;
             float steering = joyStick;
             /*
             if (fabs(joyStick - steerto) > 0.5)
@@ -236,11 +230,11 @@ int main(int argc, char *argv[]) {
             */
             float speed = controller.lTrig() - controller.rTrig();
 
-            // printf("joyStick = %.4f, steering = %.4f, percentage = %.4f\n",
-            // joyStick, steering, percentage);
+            // printf("joyStick = %.4f, steering = %.4f, percentage =
+            // %.4f\n", joyStick, steering, percentage);
 
-            // this is to slow down the rotation of the wheel that the car is
-            // turning to
+            // this is to slow down the rotation of the wheel that the car
+            // is turning to
             float lJoyXl = 1.0;
             float lJoyXr = 1.0;
             if (steering > 0)
@@ -251,8 +245,8 @@ int main(int argc, char *argv[]) {
             float left = speed * lJoyXl;
             float right = speed * lJoyXr;
 
-            // Uses the mapped values of the triggers to determine the speed of
-            // the robot
+            // Uses the mapped values of the triggers to determine the speed
+            // of the robot
             dotIO.setLeft((int)left);
             dotIO.setRight((int)right);
 
@@ -266,12 +260,7 @@ int main(int argc, char *argv[]) {
                 percentage = 1.0;
             */
         }
-
-        std::cout << dotIO.speedA << "\t" << dotIO.speedB << "\t"
-                  << dotIO.speedC << "\t" << dotIO.redValue << "\t"
-                  << dotIO.greenValue << "\t" << dotIO.blueValue << "\t"
-                  << dotIO.distance << "\t" << dotIO.lightValue << std::endl;
-
+    } else {
         while (true) {
             dotIO.update();
             char buf = 0;
@@ -313,7 +302,8 @@ int main(int argc, char *argv[]) {
     }
 }
 
-// Signal handler that will be called when Ctrl+C is pressed to stop the program
+// Signal handler that will be called when Ctrl+C is pressed to stop the
+// program
 void exit_signal_handler(int signo) {
     // printf("signal: %d\n", signo);
     // Reset everything so there are no run-away motors

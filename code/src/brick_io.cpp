@@ -44,7 +44,7 @@ int IO::calcSpeed() {  // calculates speed based on black and white values
     return speed;
 }
 
-void IO::resetEncoders() { // set 0 positions to all motors
+void IO::resetEncoders() {  // set 0 positions to all motors
     BP.reset_motor_encoder(PORT_B);
     BP.reset_motor_encoder(PORT_C);
     BP.reset_motor_encoder(PORT_D);
@@ -78,12 +78,10 @@ void IO::setLeft(int speed) { dpsB(speed); }
 
 void IO::setRight(int speed) { dpsC(speed); }
 
-void IO::resetMotors()
-{
-    BP.reset_all();
-}
+void IO::resetMotors() { BP.reset_all(); }
 
-void IO::steerPosition(int pos) { // Maps the incoming values to the maximum and minimum steering positions
+void IO::steerPosition(int pos) {  // Maps the incoming values to the maximum
+                                   // and minimum steering positions
     if (pos > 100) pos = 100;
     if (pos < -100) pos = -100;
 
