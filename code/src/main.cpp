@@ -34,30 +34,33 @@ int main(int argc, char* argv[]) {
 
     while (true) {
         dotIO.update();
-
+            //if sensor detects green
         if ((dotIO.redValue > 420 and dotIO.redValue < 460) and
             (dotIO.greenValue > 400 and dotIO.greenValue < 440) and
             (dotIO.blueValue > 230 and dotIO.blueValue < 270)) {
             std::cout << "Insitutieplein!" << std::endl;
+            //if sensor detects dark grey
         } else if ((dotIO.redValue > 380 and dotIO.redValue < 420) and
                    (dotIO.greenValue > 370 and dotIO.greenValue < 410) and
                    (dotIO.blueValue > 280 and dotIO.blueValue < 320)) {
             std::cout << "Donkergrijs" << std::endl;
+            //if sensor detects light grey
         } else if ((dotIO.redValue > 430 and dotIO.redValue < 470) and
                    (dotIO.greenValue > 420 and dotIO.greenValue < 460) and
                    (dotIO.blueValue > 330 and dotIO.blueValue < 370)) {
             std::cout << "Lichtgrijs" << std::endl;
-            // if sensor detects red
+            // if sensor detects orange
         } else if ((dotIO.redValue > 570 and dotIO.redValue < 650) and
                    (dotIO.greenValue > 320 and dotIO.greenValue < 400) and
                    (dotIO.blueValue > 170 and dotIO.blueValue < 250)) {
-            std::cout << "Rode lijn stop nu!!!" << std::endl;
+            std::cout << "Oranje stop nu!!!" << std::endl;
             // dotIO.dpsB(60);
             // dotIO.dpsC(60);
             // usleep(1000 * 1000);
             dotIO.dpsB(0);
             dotIO.dpsC(0);
         } else if (dotIO.lightValue > 2400 && dotIO.lightValue < 2800) {
+            //if sensor detects the shade of the stairs
             std::cout << "trap!!" << std::endl;
             // dotIO.dpsB(60);
             // dotIO.dpsC(60);
