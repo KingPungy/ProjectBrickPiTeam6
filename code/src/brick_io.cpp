@@ -5,27 +5,33 @@
 #include <string>
 #include "../include/helpmath.hpp"
 
-IO::IO() { // Initialize sensors
+IO::IO() {  // Initialize sensors
     BP.detect();
 
-    // BP.set_sensor_type(PORT_3, SENSOR_TYPE_NXT_LIGHT_ON);
+    BP.set_sensor_type(PORT_2, SENSOR_TYPE_NXT_LIGHT_ON);
     // BP.set_sensor_type(PORT_1, SENSOR_TYPE_TOUCH);
     // BP.set_sensor_type(PORT_2, SENSOR_TYPE_TOUCH);
-    // BP.set_sensor_type(PORT_4, SENSOR_TYPE_NXT_ULTRASONIC);
+    BP.set_sensor_type(PORT_1, SENSOR_TYPE_NXT_ULTRASONIC);
     BP.set_sensor_type(PORT_4, SENSOR_TYPE_NXT_COLOR_FULL);
 }
 
 void IO::update() {
+    BP.get_sensor(PORT_2, Light3);
+    lightValue = Light3.reflected;
+
+    BP.get_sensor(PORT_1, Ultrasonic4);
+    // distance = Ultrasonic4.a;
+
     BP.get_sensor(PORT_4, Color1);
     redValue = Color1.reflected_red;
     greenValue = Color1.reflected_green;
     blueValue = Color1.reflected_blue;
 
     // transfer to file
-    logClass.write(redValue, greenValue, blueValue, speedA, speedB, speedC);
+    // logClass.write(redValue, greenValue, blueValue, speedA, speedB, speedC);
 }
 
-int IO::calcSpeed() { // calculates speed based on black and white values
+int IO::calcSpeed() {  // calculates speed based on black and white values
     int maxspeed = 100;
     int speed = (int)map<float>(lightValue, white, black, -maxspeed, maxspeed);
 
@@ -36,7 +42,7 @@ int IO::calcSpeed() { // calculates speed based on black and white values
     return speed;
 }
 
-void IO::resetEncoders() { // set 0 positions to all motors
+void IO::resetEncoders() {  // set 0 positions to all motors
     BP.reset_motor_encoder(PORT_B);
     BP.reset_motor_encoder(PORT_C);
     BP.reset_motor_encoder(PORT_D);
@@ -66,17 +72,12 @@ void IO::dpsC(int speed) {  // motor
     BP.set_motor_dps(PORT_C, ((speed * MAX_SPEED) / 100));
 }
 
-void IO::setLeft(int speed)
-{
-    dpsB(speed);
-}
+void IO::setLeft(int speed) { dpsB(speed); }
 
-void IO::setRight(int speed)
-{
-    dpsC(speed);
-}
+void IO::setRight(int speed) { dpsC(speed); }
 
-void IO::steerPosition(int pos) { // Maps the incoming values to the maximum and minimum steering positions
+void IO::steerPosition(int pos) {  // Maps the incoming values to the maximum
+                                   // and minimum steering positions
     if (pos > 100) pos = 100;
     if (pos < -100) pos = -100;
 
