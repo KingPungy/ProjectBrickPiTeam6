@@ -19,8 +19,9 @@ void IO::update() {
     BP.get_sensor(PORT_2, Light3);
     lightValue = Light3.reflected;
 
-    BP.get_sensor(PORT_1, Ultrasonic4);
-    // distance = Ultrasonic4.a;
+    if (BP.get_sensor(PORT_1, Ultrasonic4) == 0) {
+        distance = Ultrasonic4.cm;
+    }
 
     BP.get_sensor(PORT_4, Color1);
     redValue = Color1.reflected_red;
@@ -28,7 +29,8 @@ void IO::update() {
     blueValue = Color1.reflected_blue;
 
     // transfer to file
-    // logClass.write(redValue, greenValue, blueValue, speedA, speedB, speedC);
+    logClass.write(redValue, greenValue, blueValue, distance, lightValue,
+                   speedA, speedB, speedC);
 }
 
 int IO::calcSpeed() {  // calculates speed based on black and white values
@@ -82,6 +84,6 @@ void IO::steerPosition(int pos) {  // Maps the incoming values to the maximum
     if (pos < -100) pos = -100;
 
     int spos = (int)map<float>(pos, -100, 100, -maxSteering, maxSteering);
-
+    speedA = spos;
     BP.set_motor_position(PORT_A, spos);
 }

@@ -14,7 +14,7 @@ class IO {
     int redValue, greenValue, blueValue;
 
     // Ultra-Sonic-Sensor Variables
-    int distance;
+    float distance;
     // Touch Sensors Varables
     bool touchSensor1, touchSensor2;
 

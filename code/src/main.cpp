@@ -54,28 +54,25 @@ int main(int argc, char* argv[]) {
             std::cout << "Rode lijn stop nu!!!" << std::endl;
             // dotIO.dpsB(60);
             // dotIO.dpsC(60);
-            usleep(1000 * 1000);
+            // usleep(1000 * 1000);
             dotIO.dpsB(0);
             dotIO.dpsC(0);
         }
 
-        if (dotIO.lightValue > 2300 && dotIO.lightValue < 2700) {
+        if (dotIO.lightValue > 2400 && dotIO.lightValue < 2600) {
             std::cout << "trap!!" << std::endl;
-            dotIO.dpsB(60);
-            dotIO.dpsC(60);
-            usleep(1000 * 1000);
+            // dotIO.dpsB(60);
+            // dotIO.dpsC(60);
+            // usleep(1000 * 1000);
             dotIO.dpsB(0);
             dotIO.dpsC(0);
         }
 
-        else {
-            dotIO.dpsB(0);
-            dotIO.dpsC(0);
-            std::cout << dotIO.speedA << "\t" << dotIO.speedB << "\t"
-                      << dotIO.speedC << "\t" << dotIO.redValue << "\t"
-                      << dotIO.greenValue << "\t" << dotIO.blueValue << "\t"
-                      << dotIO.lightValue << std::endl;
-        }
+        std::cout << dotIO.speedA << "\t" << dotIO.speedB << "\t"
+                  << dotIO.speedC << "\t" << dotIO.redValue << "\t"
+                  << dotIO.greenValue << "\t" << dotIO.blueValue << "\t"
+                  << dotIO.distance << "\t" << dotIO.lightValue << std::endl;
+
         usleep(100 * 1000);
     }
 }
