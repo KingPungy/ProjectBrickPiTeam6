@@ -57,9 +57,7 @@ int main(int argc, char* argv[]) {
             // usleep(1000 * 1000);
             dotIO.dpsB(0);
             dotIO.dpsC(0);
-        }
-
-        if (dotIO.lightValue > 2400 && dotIO.lightValue < 2600) {
+        } else if (dotIO.lightValue > 2400 && dotIO.lightValue < 2800) {
             std::cout << "trap!!" << std::endl;
             // dotIO.dpsB(60);
             // dotIO.dpsC(60);
