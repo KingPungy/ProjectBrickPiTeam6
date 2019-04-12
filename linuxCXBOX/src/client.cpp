@@ -2,6 +2,7 @@
 
 #include "../include/ip.h"
 #include <arpa/inet.h>
+#include <cstring>
 
 client::client(const std::string& server_ip, int port)
 {
@@ -44,13 +45,35 @@ void client::send_ping()
 	int err = send_message(msg, m_sockfd, m_si_server);
 }
 
-void client::send_input(void* data)
+void client::send_input_controller_btn_change(uint8_t* data)
 {
 	message msg;
-	msg.u.s.id = MESSAGE_ID_INPUT;
+	msg.u.s.id = MESSAGE_ID_INPUT_CONTROLLER_BTN_CHANGE;
 	//msg.u.s.time = time(0);
 	msg.u.s.size = 3;
+	msg.data = data;
+	
+	int err = send_message(msg, m_sockfd, m_si_server);
+}
+
+
+void client::send_input_controller_btn_all(uint8_t* data)
+{
+	message msg;
+	msg.u.s.id = MESSAGE_ID_INPUT_CONTROLLER_BTN_ALL;
+	//msg.u.s.time = time(0);
+	msg.u.s.size = 12;
 	msg.data = (uint8_t*)data;
 	
+	int err = send_message(msg, m_sockfd, m_si_server);
+}
+
+void client::send_tts(char* data)
+{
+	message msg;
+	msg.u.s.id = MESSAGE_ID_TTS;
+	msg.u.s.size = strlen(data);
+	msg.data = (uint8_t*)data;
+
 	int err = send_message(msg, m_sockfd, m_si_server);
 }
