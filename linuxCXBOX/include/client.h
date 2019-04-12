@@ -24,7 +24,10 @@ public:
 	std::string get_ip();
 	std::string get_ip_server();
 	void send_ping();
-	void send_input(void* data);
+	void send_input_controller_btn_change(uint8_t* data);
+	void send_input_controller_btn_all(uint8_t* data);
+	void send_tts(char* data);
+	
 	//int recv_wait();
 };
 

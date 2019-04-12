@@ -13,7 +13,8 @@ Ruben Zwietering
 // Class headers
 #include "../include/brick_io.hpp"    // IO input Class
 #include "../include/controller.hpp"  // Controller input Class
-                                      // hulp functies
+                                      // hulp 
+									  // functies
 
 #include "../include/helpmath.hpp"
 #include "../include/server.h"
@@ -66,11 +67,13 @@ int omx(const int &soundIndex) {
         // FIXME
         return execl("/usr/bin/omxplayer", "/usr/bin/omxplayer", "--vol",
                      "-500", sounds[soundIndex].c_str(), (char *)0);
-    }
+     }
+	//else{
+	// 	int exit_status;
+	// 	wait(&exit_status);
+	// }
     return -pid;
 }
-
-float lerp(float a, float b, float f) { return (a * (1.0 - f)) + (b * f); }
 
 int main(int argc, char *argv[]) {
     signal(SIGINT, exit_signal_handler);  // register exit for Ctrl+C
@@ -106,9 +109,9 @@ int main(int argc, char *argv[]) {
     printf("controller mode: %s\n", controllerFlag ? "on" : "off");
     printf("max speed: %d\n", dotIO.MAX_SPEED);
 
-    // float steerto = 0.0;
-    // float steerto_old = 0.0;
-    // float percentage = 0.0;
+    float steerto = 0.0;
+    //float steerto_old = 0.0;
+    float percentage = 0.0;
 
     server serv(DEFAULT_PORT);
 
@@ -116,32 +119,34 @@ int main(int argc, char *argv[]) {
         int value = -1;
         int old_value = value;
 
-        while (true) {
+        int speaker_output = 500;
+
+        for (;;) {
             dotIO.update();
             // std::cout << "\r" << dotIO.speedA << "\t" << dotIO.speedB << "\t"
             //          << dotIO.speedC << "\t" << dotIO.redValue << "\t"
             //          << dotIO.greenValue << "\t" << dotIO.blueValue
             //          << std::endl;
 
-            if ((dotIO.redValue > 420 and dotIO.redValue < 460) and
-                (dotIO.greenValue > 400 and dotIO.greenValue < 440) and
-                (dotIO.blueValue > 230 and dotIO.blueValue < 270)) {
-                std::cout << "Insitutieplein!" << std::endl;
+            if ((dotIO.redValue > 420 && dotIO.redValue < 460) &&
+                (dotIO.greenValue > 400 && dotIO.greenValue < 440) &&
+                (dotIO.blueValue > 230 && dotIO.blueValue < 270)) {
+					value= 0;
                 // if sensor detects dark grey
-            } else if ((dotIO.redValue > 380 and dotIO.redValue < 420) and
-                       (dotIO.greenValue > 370 and dotIO.greenValue < 410) and
-                       (dotIO.blueValue > 280 and dotIO.blueValue < 320)) {
-                std::cout << "Donkergrijs" << std::endl;
+            } else if ((dotIO.redValue > 380 && dotIO.redValue < 420) &&
+                       (dotIO.greenValue > 370 && dotIO.greenValue < 410) &&
+                       (dotIO.blueValue > 280 && dotIO.blueValue < 320)) {
+					value= 1;
                 // if sensor detects light grey
-            } else if ((dotIO.redValue > 430 and dotIO.redValue < 470) and
-                       (dotIO.greenValue > 420 and dotIO.greenValue < 460) and
-                       (dotIO.blueValue > 330 and dotIO.blueValue < 370)) {
-                std::cout << "Lichtgrijs" << std::endl;
+            } else if ((dotIO.redValue > 430 && dotIO.redValue < 470) &&
+                       (dotIO.greenValue > 420 && dotIO.greenValue < 460) &&
+                       (dotIO.blueValue > 330 && dotIO.blueValue < 370)) {
+					value= 2;
                 // if sensor detects orange
-            } else if ((dotIO.redValue > 570 and dotIO.redValue < 650) and
-                       (dotIO.greenValue > 320 and dotIO.greenValue < 400) and
-                       (dotIO.blueValue > 170 and dotIO.blueValue < 250)) {
-                std::cout << "Oranje stop nu!!!" << std::endl;
+            } else if ((dotIO.redValue > 570 && dotIO.redValue < 650) &&
+                       (dotIO.greenValue > 320 && dotIO.greenValue < 400) &&
+                       (dotIO.blueValue > 170 && dotIO.blueValue < 250)) {
+					value= 3;
                 dotIO.dpsB(60);
                 dotIO.dpsC(60);
                 usleep(1000 * 1000);
@@ -149,12 +154,12 @@ int main(int argc, char *argv[]) {
                 dotIO.dpsC(0);
             } else if (dotIO.lightValue > 2400 && dotIO.lightValue < 2800) {
                 // if sensor detects the shade of the stairs
-                std::cout << "trap!!" << std::endl;
-                dotIO.dpsB(60);
-                dotIO.dpsC(60);
-                usleep(1000 * 1000);
-                dotIO.dpsB(0);
-                dotIO.dpsC(0);
+				value = 4;
+                // dotIO.dpsB(60);
+                // dotIO.dpsC(60);
+                // usleep(1000 * 1000);
+                // dotIO.dpsB(0);
+                // dotIO.dpsC(0);
             }
             if (false && value != old_value) {
                 switch (value) {
@@ -169,9 +174,24 @@ int main(int argc, char *argv[]) {
                     case 2:
                         printf("Lichtgrijs\n");
                         break;
+					case 3:
+						printf("Oranje stop nu!\n");
+						break;
+					case 4:
+						printf("trap!\n");
+						break;
                 }
             }
-
+			/*  De if statement hieronder zorgt ervor dat de pi voor een object
+            stopt dat minder dan 10 cm van zijn ultrasone sensor verwijdert is.
+            Doordat de ultrasone sensor niet werkte, hebben wij de if statement
+            als commentaar gezet
+            if (dotIO.distance < 10) {
+                std::cout << "Object" << std::endl;
+                dotIO.dpsB(0);
+                dotIO.dpsC(0);
+            }
+            */
             old_value = value;
 
             if (serv.has_message()) {
@@ -193,11 +213,11 @@ int main(int argc, char *argv[]) {
                 }
             }
 
-            int exit_status;
-            int ret =
-                waitpid(0, &exit_status, WNOHANG | WUNTRACED | WCONTINUED);
-            // FIXME
-            if (ret == -1 || ret == 0) {
+            //int exit_status;
+            //int ret = waitpid(0, &exit_status, WNOHANG | WUNTRACED | WCONTINUED);
+            // so we wont get multiple audio streams running
+            if (++speaker_output > 120) {
+                speaker_output = 0;
                 if (controller.a()) {
                     omx(4);  // treintoeter
                 } else if (controller.b()) {
@@ -215,8 +235,7 @@ int main(int argc, char *argv[]) {
 
             float joyStick = controller.lJoyX();  // sqrt(fabs(lJoyX)) * lJoyX <
                                                   // 0 ? -10.0 : 10.0;
-            float steering = joyStick;
-            /*
+            
             if (fabs(joyStick - steerto) > 0.5)
             {
                 //percentage *= (joyStick + 100.0) / (steerto + 100.0);
@@ -225,9 +244,8 @@ int main(int argc, char *argv[]) {
                 steerto = joyStick;
             }
 
-            float steering = percentage * steerto;// lerp(steerto, steerto,
-            percentage); //map<float>(percentage, 0.0, 1.0, 0.0, steerto);
-            */
+            float steering = percentage * steerto;// lerp(steerto, steerto, percentage); //map<float>(percentage, 0.0, 1.0, 0.0, steerto);
+            
             float speed = controller.lTrig() - controller.rTrig();
 
             // printf("joyStick = %.4f, steering = %.4f, percentage =
@@ -254,13 +272,15 @@ int main(int argc, char *argv[]) {
             // Motor A
 
             dotIO.steerPosition((int)steering);
-            /*
-            percentage += 0.01;
+            percentage += 0.1;
             if (percentage > 1.0)
                 percentage = 1.0;
-            */
         }
     } else {
+		int speed = 50;
+		int forward = 0;
+		int turn  = 0;
+
         while (true) {
             dotIO.update();
             char buf = 0;
