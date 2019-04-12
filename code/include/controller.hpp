@@ -1,34 +1,88 @@
 #ifndef CONTROLLER_HPP
 #define CONTROLLER_HPP
 
-#include <fcntl.h>
+//#include <fcntl.h>
 #include <unistd.h>
-#include <bitset>
-#include <fstream>
-#include <iostream>
+#include <cstdint>
+//#include <bitset>
+//#include <fstream>
+//#include <iostream>
 
-struct js_event {
-    uint32_t buttons;
-    int32_t joyX;
-    uint8_t joyY;
-    uint8_t uselessStuff;
+
+#define INPUT_STRUCT_SIZE 12
+
+struct input_event
+{
+    int16_t value;
+    uint8_t id;
 };
 
 class classControl {
-   public:
-    bool a, b, x, y;
-    bool lb, rb;
-    bool home, back, start;
-    bool bjl, bjr;
-    int joyX, joyY;
-    int fd;
-    struct js_event e;
+   protected:
+    // no name needed here really, it is a variable now
+    union
+    {
+        uint8_t buf[INPUT_STRUCT_SIZE];
+        struct
+        {
+            int16_t X1          = 0;
+            int16_t Y1          = 0;
+            int16_t X2          = 0;
+            int16_t Y2          = 0;
+            // say to the bools they are 1 bit wide instead of 8 bits for packing purposes
+            bool du             : 1;
+            bool dd             : 1;
+            bool dl             : 1;
+            bool dr             : 1;
+            bool back           : 1;
+            bool guide          : 1;
+            bool start          : 1;
+            bool TL             : 1;
+            bool TR             : 1;
+            bool A              : 1;
+            bool B              : 1;
+            bool X              : 1;
+            bool Y              : 1;
+            bool LB             : 1;
+            bool RB             : 1;
+            // put in this extra bit here so there is 16 instead of an akward 15
+            bool extra          : 1;
+            uint8_t LT          = 0;
+            uint8_t RT          = 0;
+        //__attribute__((packed)) means the compiler won't add padding
+        } __attribute__((packed)) s = { 0 };
+    } __attribute__((packed)) u_input_data;
 
+public:
     classControl();
-
-    void update();
+    // fills u_input_data with input
+    void process_input_controller_btn_all(void* input);
+    void process_input_controller_btn_change(void* input);
 
     void printInput();
+
+    // controller button and joystick getters
+    const bool a() const;
+    const bool b() const;
+    const bool x() const;
+    const bool y() const;
+    const bool lb() const;
+    const bool rb() const;
+    const bool home() const;
+    const bool back() const;
+    const bool start() const;
+    const bool lJb() const;
+    const bool rJb() const;
+    const float lJoyX() const;
+    const float lJoyY() const;
+    const float rJoyX() const;
+    const float rJoyY() const;
+    const float rTrig() const;
+    const float lTrig() const;
+    const bool dLeft() const;
+    const bool dRight() const;
+    const bool dUp() const;
+    const bool dDown() const;
 };
 
 #endif

@@ -2,50 +2,40 @@
 #include "../include/brick_io.hpp"
 #include <unistd.h>  // for usleep
 #include <iostream>
+#include <string>
+#include "../include/helpmath.hpp"
 
-IO::IO() {
+IO::IO() {  // Initialize sensors
     BP.detect();
 
-    BP.set_sensor_type(PORT_1, SENSOR_TYPE_TOUCH);
-    BP.set_sensor_type(PORT_2, SENSOR_TYPE_TOUCH);
-    BP.set_sensor_type(PORT_3, SENSOR_TYPE_NXT_LIGHT_ON);
-    BP.set_sensor_type(PORT_4, SENSOR_TYPE_NXT_ULTRASONIC);
+    BP.set_sensor_type(PORT_2, SENSOR_TYPE_NXT_LIGHT_ON);
+    // BP.set_sensor_type(PORT_1, SENSOR_TYPE_TOUCH);
+    // BP.set_sensor_type(PORT_2, SENSOR_TYPE_TOUCH);
+    BP.set_sensor_type(PORT_1, SENSOR_TYPE_NXT_ULTRASONIC);
+    BP.set_sensor_type(PORT_4, SENSOR_TYPE_NXT_COLOR_FULL);
 }
 
 void IO::update() {
-    BP.get_sensor(PORT_1, Touch1);
-    touchSensor1 = !(Touch1.pressed);
-    BP.get_sensor(PORT_2, Touch2);
-    touchSensor2 = !(Touch2.pressed);
-    BP.get_sensor(PORT_3, Light3);
+    BP.get_sensor(PORT_2, Light3);
     lightValue = Light3.reflected;
-    BP.get_sensor(PORT_4, Ultrasonic4);
-    distance = Ultrasonic4.cm;
+
+    if (BP.get_sensor(PORT_1, Ultrasonic4) == 0) {
+        distance = Ultrasonic4.cm;
+    }
+
+    BP.get_sensor(PORT_4, Color1);
+    redValue = Color1.reflected_red;
+    greenValue = Color1.reflected_green;
+    blueValue = Color1.reflected_blue;
+
+    // transfer to file
+    logClass.write(redValue, greenValue, blueValue, distance, lightValue,
+                   speedA, speedB, speedC);
 }
 
-
-int IO::calcSpeed(){
-    // foutwaarde is lightValue - average
-
-    //if (lightValue > black){black = lightValue; average = (white + black)/2}
-    //if (lightValue < white){white = lightValue; average = (white + black)/2} 
-
-/*
-    float margin = lightValue - average;
-    int percentageMarge;
-
-
-    if (margin > 0) { // te zwart
-        percentageMarge = (margin / (black - average) ) * 100.0;
-        //std::cout << "black: " << percentageMarge << std::endl;
-    } else { //te wit
-        percentageMarge = (margin / (average - white) ) * 100.0;
-        //std::cout << "white: " << percentageMarge << std::endl;
-    }
-    return percentageMarge;
-*/
+int IO::calcSpeed() {  // calculates speed based on black and white values
     int maxspeed = 100;
-    int speed = (int)mapf(lightValue, white, black, -maxspeed, maxspeed);
+    int speed = (int)map<float>(lightValue, white, black, -maxspeed, maxspeed);
 
     if (speed < -maxspeed)
         speed = -maxspeed;
@@ -54,31 +44,48 @@ int IO::calcSpeed(){
     return speed;
 }
 
-float IO::mapf(float v, float min0, float max0, float min1, float max1)
-{
-    return min1 + (max1 - min1) * ((v - min0) / (max0 - min0));
-}
-
-void IO::resetEncoders() {
-    BP.reset_motor_encoder(PORT_A);
+void IO::resetEncoders() {  // set 0 positions to all motors
     BP.reset_motor_encoder(PORT_B);
     BP.reset_motor_encoder(PORT_C);
+    BP.reset_motor_encoder(PORT_D);
 }
 
-void IO::dpsA(int speed) { // extra motor
+void IO::dpsD(int speed) {  // Front Steering motor
     // speed is between -100% and 100%;
+    if (speed < -100) speed = -100;
     if (speed > 100) speed = 100;
-    BP.set_motor_dps(PORT_A, (speed * MAX_SPEED)/100);
+    speedA = speed;
+    BP.set_motor_dps(PORT_D, (speed * MAX_SPEED) / 100);
 }
 
-void IO::dpsB(int speed) { // linker motor
-    // speed is between 0% and 100%;
+void IO::dpsB(int speed) {  // motor
+    // speed is between -100% and 100%;
+    if (speed < -100) speed = -100;
     if (speed > 100) speed = 100;
-    BP.set_motor_dps(PORT_B, ((speed * MAX_SPEED)/100));
+    speedB = speed;
+    BP.set_motor_dps(PORT_B, ((speed * MAX_SPEED) / 100));
 }
 
-void IO::dpsC(int speed) { // rechter motor
-    // speed is between 0% and 100%;
+void IO::dpsC(int speed) {  // motor
+    // speed is between -100% and 100%;
+    if (speed < -100) speed = -100;
     if (speed > 100) speed = 100;
-    BP.set_motor_dps(PORT_C, ((speed * MAX_SPEED)/100));
+    speedC = speed;
+    BP.set_motor_dps(PORT_C, ((speed * MAX_SPEED) / 100));
+}
+
+void IO::setLeft(int speed) { dpsB(speed); }
+
+void IO::setRight(int speed) { dpsC(speed); }
+
+void IO::resetMotors() { BP.reset_all(); }
+
+void IO::steerPosition(int pos) {  // Maps the incoming values to the maximum
+                                   // and minimum steering positions
+    if (pos > 100) pos = 100;
+    if (pos < -100) pos = -100;
+
+    int spos = (int)map<float>(pos, -100, 100, -maxSteering, maxSteering);
+    speedA = spos;
+    BP.set_motor_position(PORT_D, spos);
 }
