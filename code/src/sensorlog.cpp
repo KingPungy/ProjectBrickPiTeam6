@@ -1,7 +1,8 @@
 #include "../include/sensorlog.hpp"
 
 void slog::write(int RD, int GR, int BL, float distance, int light, int stuur,
-                 int LA, int LR) {
+                 int LA, int LR) {                  
+    // write variables to html file for the webserver
     std::ofstream outputFile;
     outputFile.open(fileName);
     outputFile << "<meta http-equiv=\"Content-type\" content=\"text/html\" "

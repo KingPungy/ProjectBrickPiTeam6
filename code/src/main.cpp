@@ -13,10 +13,10 @@ Ruben Zwietering
 // Class headers
 #include "../include/brick_io.hpp"    // IO input Class
 #include "../include/controller.hpp"  // Controller input Class
-                                      // hulp 
-									  // functies
+                                      
 
-#include "../include/helpmath.hpp"
+#include "../include/helpmath.hpp"// hulp functies 
+									 
 #include "../include/server.h"
 
 #include <sys/wait.h>
@@ -39,9 +39,11 @@ const std::vector<std::string> sounds = {
     "/home/pi/BrickPiProject/code/sounds/gas.mp3",
     "/home/pi/BrickPiProject/code/sounds/dawey.mp3",
     "/home/pi/BrickPiProject/code/sounds/treintoeter.mp3",
-    "/home/pi/BrickPiProject/code/sounds/soviet-anthem.mp3"};
+    "/home/pi/BrickPiProject/code/sounds/soviet-anthem.mp3"
+};
 
-char getch(int vmin = 1, int vtime = 0) {
+// functie  om characters te pakken uit de terminal
+char getch(int vmin = 1, int vtime = 0) { 
     char buf = 0;
     struct termios temp = {0};
 
@@ -59,7 +61,7 @@ char getch(int vmin = 1, int vtime = 0) {
 
     return buf;
 }
-
+// Functie om Audio bestanden op de pi af te kunnen spelen met "omxplayer"
 int omx(const int &soundIndex) {
     if (soundIndex < 0 || soundIndex >= sounds.size()) return -1;
     int pid = fork();
@@ -68,7 +70,7 @@ int omx(const int &soundIndex) {
         return execl("/usr/bin/omxplayer", "/usr/bin/omxplayer", "--vol",
                      "-500", sounds[soundIndex].c_str(), (char *)0);
      }
-	//else{
+	//else{ // Deze else is om de functie blocking te maken
 	// 	int exit_status;
 	// 	wait(&exit_status);
 	// }
@@ -89,8 +91,9 @@ int main(int argc, char *argv[]) {
     */
     bool controllerFlag = false;
     uint8_t check_speed = 0;
-
-    // system("sudo xboxdrv --detach-kernel-driver --silent &");
+    // Dit zet de Xbox controller driver aan via het programma 
+    // Het blijkt wel beter te werken als je de driver handmatig aan zet
+    // system("sudo xboxdrv --detach-kernel-driver --silent &"); 
 
     if (argc > 1)
         if (argv[1][0] == '-')
@@ -106,6 +109,7 @@ int main(int argc, char *argv[]) {
     if (check_speed && check_speed < argc)
         dotIO.MAX_SPEED = atoi(argv[check_speed]);
 
+    // Laat zien welke mode en speed er is ingesteld
     printf("controller mode: %s\n", controllerFlag ? "on" : "off");
     printf("max speed: %d\n", dotIO.MAX_SPEED);
 
@@ -154,7 +158,7 @@ int main(int argc, char *argv[]) {
                 dotIO.dpsC(0);
             } else if (dotIO.lightValue > 2400 && dotIO.lightValue < 2800) {
                 // if sensor detects the shade of the stairs
-				value = 4;
+				value = 4; // Disabled for Demo 
                 // dotIO.dpsB(60);
                 // dotIO.dpsC(60);
                 // usleep(1000 * 1000);
@@ -215,7 +219,8 @@ int main(int argc, char *argv[]) {
 
             //int exit_status;
             //int ret = waitpid(0, &exit_status, WNOHANG | WUNTRACED | WCONTINUED);
-            // so we wont get multiple audio streams running
+
+            // \/ for loop so we won't get multiple audio streams running 
             if (++speaker_output > 120) {
                 speaker_output = 0;
                 if (controller.a()) {
@@ -229,9 +234,11 @@ int main(int argc, char *argv[]) {
                 }
             }
 
+
             // controller.printInput();
 
-            // // so the joystick is non-linear
+
+            // so the joystick is non-linear
 
             float joyStick = controller.lJoyX();  // sqrt(fabs(lJoyX)) * lJoyX <
                                                   // 0 ? -10.0 : 10.0;
@@ -248,6 +255,7 @@ int main(int argc, char *argv[]) {
             
             float speed = controller.lTrig() - controller.rTrig();
 
+            // Debug Print. 
             // printf("joyStick = %.4f, steering = %.4f, percentage =
             // %.4f\n", joyStick, steering, percentage);
 
@@ -269,7 +277,7 @@ int main(int argc, char *argv[]) {
             dotIO.setRight((int)right);
 
             // Sets the position of the motor for the front steeing wheel ,
-            // Motor A
+            // Motor D
 
             dotIO.steerPosition((int)steering);
             percentage += 0.1;
@@ -281,32 +289,33 @@ int main(int argc, char *argv[]) {
 		int forward = 0;
 		int turn  = 0;
 
+        // Manual keyboard mode
         while (true) {
-            dotIO.update();
+            dotIO.update(); // update input values
             char buf = 0;
             switch (buf = getch(0)) {
-                case 's':
+                case 's': // backwards
                 case 'S':
                     if (forward > 0)
                         forward = 0;
                     else
                         forward = -speed;
                     break;
-                case 'w':
+                case 'w': // forwrd
                 case 'W':
                     if (forward < 0)
                         forward = 0;
                     else
                         forward = speed;
                     break;
-                case 'd':
+                case 'd': // right
                 case 'D':
                     if (turn < 0)
                         turn = 0;
                     else
                         turn = speed;
                     break;
-                case 'a':
+                case 'a': // Left
                 case 'A':
                     if (turn > 0)
                         turn = 0;

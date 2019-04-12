@@ -26,8 +26,6 @@ int send_message(const message& msg, const int sockfd, const sockaddr_in& si)
 	return sbytes;
 }
 
-#include <cstdio>
-//#include <unistd.h>
 int recv_message(message& msg, const int sockfd, const sockaddr_in& si)
 {
 	// buffer where the header of the message is stored
@@ -37,17 +35,8 @@ int recv_message(message& msg, const int sockfd, const sockaddr_in& si)
 	// recvfrom needs a pointer to a socklen_t
 	socklen_t addr_size = sizeof(si);
 
-	// MSG_DONTWAIT
-	//printf("receiving 1\n");
-
 	// get the header data
 	int hbytes = recvfrom(sockfd, hbuf, MESSAGE_HEADER_SIZE, 0, (sockaddr*)&si, &addr_size);
-
-	//printf("end receiving 1\n");
-	//printf("hbytes = %d\n", hbytes);
-	//for (int i = 0; i < hbytes; i++)
-	//	printf("%#4x ", hbuf[i]);
-	//printf("\n");
 
 	// something went wrong or there is no waiting data
 	if (hbytes <= 0)
@@ -60,8 +49,6 @@ int recv_message(message& msg, const int sockfd, const sockaddr_in& si)
 	if (hbytes < MESSAGE_HEADER_SIZE)
 		return hbytes;
 
-	//printf("id: %d, size: %d\n", msg.s.id, msg.s.size);
-
 	// something went wrong
 	if (msg.s.id == MESSAGE_ID_ERR)
 		return -1;
@@ -71,66 +58,28 @@ int recv_message(message& msg, const int sockfd, const sockaddr_in& si)
 	// set the buffer to all zeros
 	memset(bbuf, 0, MESSAGE_HEADER_SIZE + msg.s.size);
 
-	//printf("receiving 2\n");
-	//usleep(100000);
-
 	// get the body data
 	int bbytes = recvfrom(sockfd, bbuf, MESSAGE_HEADER_SIZE + msg.s.size, 0, (sockaddr*)&si, &addr_size);
-
-	//printf("end receiving 2\n");
-
-	/*printf("bbytes = %d\n", bbytes);
-	for (int i = 0; i < bbytes; i++)
-		printf("%#4x ", bbuf[i]);
-	printf("\n");*/
 
 	// something went wrong or there is no data
 	if (bbytes <= 0)
 		return hbytes;
 	if (msg.data)
 	{
-		//printf("deleting msg.data\n");
-
 		// if there is pointer to the message data delete it because we are going to make a new one
 		delete[] msg.data;
-
-		//printf("deleted msg.data\n");
 	}
-
-	//printf("allocating msg.data[msg.s.size]\n");
 
 	// make a new message data pointer
 	msg.data = new uint8_t[msg.s.size];
 	// set the message data to all zeros
 	memset(msg.data, 0, msg.s.size);
 
-	//printf("allocated msg.data[msg.s.size]\n");
-	//printf("copying bbuf + headersize to msg.data\n");
-
 	// copy message body data to the message data pointer with the header offset because for some reason it gets received aswell. -> maybe look into why
 	memcpy(msg.data, bbuf + MESSAGE_HEADER_SIZE, msg.s.size);
 
-	//printf("copyied bbuf + headersize to msg.data\n");
-	/*printf("msg.s.size = %d\n", msg.s.size);
-	for (int i = 0; i < msg.s.size; i++)
-		printf("%#4x ", msg.data[i]);
-	printf("\n");*/
-	/*printf("bbytes = %d\n", bbytes);
-	for (int i = 0; i < bbytes; i++)
-		printf("%#4x ", bbuf[i]);
-	printf("\n");*/
-	//printf("deleting bbuf\n");
-
 	// delete temporary body buffer
 	delete[] bbuf;
-
-	//printf("deleted bbuf\n");
-	/*printf("msg.s.size = %d\n", msg.s.size);
-	for (int i = 0; i < msg.s.size; i++)
-		printf("%#4x ", msg.b[i]);
-	printf("\n"); */
-	
-	//printf("id: %d, size: %d\n", msg.s.id, msg.s.size);
 
 	// return the number of bytes received (bbytes is header size too large)
 	return hbytes + bbytes - MESSAGE_HEADER_SIZE;

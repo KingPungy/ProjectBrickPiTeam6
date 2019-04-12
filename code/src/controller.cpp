@@ -70,7 +70,7 @@ void classControl::printInput() { // Prints all button and axis values of the co
         "%6f rTrigger: %6f dleft: %6d dRight: %6d dUp: %6d Down: %6d\n", 
         lJoyX(), lJoyY(), rJoyX(), rJoyY(), lTrig(), rTrig(), dLeft(), dRight(), dUp(), dDown());
 }
-
+// Makes a function that returns its valu
 const bool classControl::a() const {
     return u_input_data.s.A;
 }

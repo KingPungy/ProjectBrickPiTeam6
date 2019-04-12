@@ -6,10 +6,10 @@
 
 client::client(const std::string& server_ip, int port)
 {
+	// set up the class
 	m_si_server.sin_family = AF_INET;
 	m_si_server.sin_port = htons(port);
 	inet_aton(server_ip.c_str(), &m_si_server.sin_addr);
-	m_si_size = sizeof(m_si_server);
 
 	m_sockfd = socket(m_si_server.sin_family, SOCK_DGRAM, 0);
 	m_interface = "wlan0";
@@ -17,7 +17,11 @@ client::client(const std::string& server_ip, int port)
 
 client::~client()
 {
-
+	// if these pointers exist deallocate them
+	if (m_sendmsg.data)
+		delete[] m_sendmsg.data;
+	if (m_recvmsg.data)
+		delete[] m_recvmsg.data;
 }
 
 std::string client::get_ip()
@@ -37,43 +41,37 @@ std::string client::get_ip_server()
 
 void client::send_ping()
 {
+	// create a message struct with the correct data
 	message msg;
-	msg.u.s.id = MESSAGE_ID_PING;
-	msg.u.s.size = 0;
+	msg.s.id = MESSAGE_ID_PING;
+	msg.s.size = 0;
 	msg.data = 0;
 
+	// send the data
 	int err = send_message(msg, m_sockfd, m_si_server);
 }
 
 void client::send_input_controller_btn_change(uint8_t* data)
 {
+	// create a message struct with the correct data
 	message msg;
-	msg.u.s.id = MESSAGE_ID_INPUT_CONTROLLER_BTN_CHANGE;
-	//msg.u.s.time = time(0);
-	msg.u.s.size = 3;
+	msg.s.id = MESSAGE_ID_INPUT_CONTROLLER_BTN_CHANGE;
+	msg.s.size = 3;
 	msg.data = data;
 	
+	// send the data
 	int err = send_message(msg, m_sockfd, m_si_server);
 }
 
 
 void client::send_input_controller_btn_all(uint8_t* data)
 {
+	// create a message struct with the correct data
 	message msg;
-	msg.u.s.id = MESSAGE_ID_INPUT_CONTROLLER_BTN_ALL;
-	//msg.u.s.time = time(0);
-	msg.u.s.size = 12;
+	msg.s.id = MESSAGE_ID_INPUT_CONTROLLER_BTN_ALL;
+	msg.s.size = 12;
 	msg.data = (uint8_t*)data;
 	
-	int err = send_message(msg, m_sockfd, m_si_server);
-}
-
-void client::send_tts(char* data)
-{
-	message msg;
-	msg.u.s.id = MESSAGE_ID_TTS;
-	msg.u.s.size = strlen(data);
-	msg.data = (uint8_t*)data;
-
+	// send the data
 	int err = send_message(msg, m_sockfd, m_si_server);
 }
